@@ -7,6 +7,8 @@
 ##
 
 is() {
+  local name="${FUNCNAME[0]}" version='1.1.0'
+
   is::show.help() {
     cat <<- EOF
 			Conditions:
@@ -45,7 +47,7 @@ is() {
   }
 
   is::show.version() {
-    printf 'is.sh 1.1.0'
+    printf '%s %s\n' "${name}" "${version}"
 
     exit 0
   }
