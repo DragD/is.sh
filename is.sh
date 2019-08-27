@@ -7,7 +7,7 @@
 ##
 
 is() {
-    if [ "$1" == "--help" ]; then
+    if [ "$1" == '--help' ]; then
         cat << EOF
 Conditions:
   is equal VALUE_A VALUE_B
@@ -43,7 +43,7 @@ EOF
         exit
     fi
 
-    if [ "$1" == "--version" ]; then
+    if [ "$1" == '--version' ]; then
         echo "is.sh 1.1.0"
         exit
     fi
@@ -52,14 +52,14 @@ EOF
     local value_a="$2"
     local value_b="$3"
 
-    if [ "$condition" == "not" ]; then
-        shift 1
+  if [ "$condition" = 'not' ]; then
+    shift 1
         ! is "${@}"
         return $?
     fi
 
-  if [ "$condition" == "a" ] || [ "$condition" == "an" ] \
-    || [ "$condition" == "the" ]; then
+  if [ "$condition" == 'a' ] || [ "$condition" == 'an' ] \
+    || [ "$condition" == 'the' ]; then
         shift 1
         is "${@}"
         return $?
