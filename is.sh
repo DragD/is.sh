@@ -80,77 +80,77 @@ is() {
   #       it is being kept for consistency
   case "$condition" in
     file)
-      [ -f "$1" ]; return $?;;
+      [ -f "$1" ];;
     dir|directory)
-      [ -d "$1" ]; return $?;;
+      [ -d "$1" ];;
     link|symlink)
-      [ -L "$1" ]; return $?;;
+      [ -L "$1" ];;
     existent|existing|exist|exists)
-      [ -e "$1" ]; return $?;;
+      [ -e "$1" ];;
     readable)
-      [ -r "$1" ]; return $?;;
+      [ -r "$1" ];;
     writeable)
-      [ -w "$1" ]; return $?;;
+      [ -w "$1" ];;
     executable)
-      [ -x "$1" ]; return $?;;
+      [ -x "$1" ];;
     available|installed)
-      which "$1"; return $?;;
+      which "$1";;
     empty)
-      [ -z "$1" ]; return $?;;
+      [ -z "$1" ];;
     number)
-      printf '%s' "$1" | grep -E '^[0-9]+(\.[0-9]+)?$'; return $?;;
+      printf '%s' "$1" | grep -E '^[0-9]+(\.[0-9]+)?$';;
     older)
-      [ "$1" -ot "$2" ]; return $?;;
+      [ "$1" -ot "$2" ];;
     newer)
-      [ "$1" -nt "$2" ]; return $?;;
+      [ "$1" -nt "$2" ];;
     gt)
       is not a number "$1" && return 1;
       is not a number "$2" && return 1;
-      awk "BEGIN {exit $1 > $2 ? 0 : 1}"; return $?;;
+      awk "BEGIN {exit $1 > $2 ? 0 : 1}";;
     lt)
       is not a number "$1" && return 1;
       is not a number "$2" && return 1;
-      awk "BEGIN {exit $1 < $2 ? 0 : 1}"; return $?;;
+      awk "BEGIN {exit $1 < $2 ? 0 : 1}";;
     ge)
       is not a number "$1" && return 1;
       is not a number "$2" && return 1;
-      awk "BEGIN {exit $1 >= $2 ? 0 : 1}"; return $?;;
+      awk "BEGIN {exit $1 >= $2 ? 0 : 1}";;
     le)
       is not a number "$1" && return 1;
       is not a number "$2" && return 1;
-      awk "BEGIN {exit $1 <= $2 ? 0 : 1}"; return $?;;
+      awk "BEGIN {exit $1 <= $2 ? 0 : 1}";;
     eq|equal)
       [ "$1" = "$2" ] && return 0;
       is not a number "$1" && return 1;
       is not a number "$2" && return 1;
-      awk "BEGIN {exit $1 == $2 ? 0 : 1}"; return $?;;
+      awk "BEGIN {exit $1 == $2 ? 0 : 1}";;
     match|matching)
-      printf '%s' "$2" | grep -xE "$1"; return $?;;
+      printf '%s' "$2" | grep -xE "$1";;
     substr|substring)
       case $2 in
         *$1*) true;; *) false;; esac;;
     true)
-      [ "$1" == true ] || [ "$1" == 0 ]; return $?;;
+      [ "$1" == true ] || [ "$1" == 0 ];;
     false)
-      [ "$1" != true ] && [ "$1" != 0 ]; return $?;;
+      [ "$1" != true ] && [ "$1" != 0 ];;
     set|var|variable)
       # cross-sh-compatible sans `pdksh v5.2.14` treats expanded empty as unset
       # @see http://mywiki.wooledge.org/BashFAQ/083
-      local x; eval x="\"\${$1+set}\""; [ "$x" = 'set' ]; return $?;;
+      local x; eval x="\"\${$1+set}\""; [ "$x" = 'set' ];;
     alias)
-      is '_type' 'alias' "$1" || [ "${BASH_ALIASES[$1]+"set"}" = 'set' ]; return $?;;
+      is '_type' 'alias' "$1" || [ "${BASH_ALIASES[$1]+"set"}" = 'set' ];;
     builtin)
-      is '_type' 'builtin' "$1"; return $?;;
+      is '_type' 'builtin' "$1";;
     fn|function)
-      is '_type' 'function' "$1"; return $?;;
+      is '_type' 'function' "$1";;
     keyword)
-      is '_type' 'keyword' "$1"; return $?;;
+      is '_type' 'keyword' "$1";;
     _type)
       LANG=C \type ${BASH_VERSION:+-t} "$2" 2> /dev/null \
-        | \grep "${KSH_VERSION:+"$2 is a "}$1" 1> /dev/null; return $?;;
+        | \grep "${KSH_VERSION:+"$2 is a "}$1" 1> /dev/null;;
   esac 1> /dev/null
 
-  return 1
+  return $?
 }
 
 if [ "${BASH_SOURCE[0]}" != "${0}" ]; then
