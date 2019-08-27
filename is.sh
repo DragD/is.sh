@@ -94,25 +94,25 @@ is() {
     newer)
       [ "$1" -nt "$2" ]; return $?;;
     gt)
-      is not a number "$1"      && return 1;
-      is not a number "$2"      && return 1;
+      is not a number "$1" && return 1;
+      is not a number "$2" && return 1;
       awk "BEGIN {exit $1 > $2 ? 0 : 1}"; return $?;;
     lt)
-      is not a number "$1"      && return 1;
-      is not a number "$2"      && return 1;
+      is not a number "$1" && return 1;
+      is not a number "$2" && return 1;
       awk "BEGIN {exit $1 < $2 ? 0 : 1}"; return $?;;
     ge)
-      is not a number "$1"      && return 1;
-      is not a number "$2"      && return 1;
+      is not a number "$1" && return 1;
+      is not a number "$2" && return 1;
       awk "BEGIN {exit $1 >= $2 ? 0 : 1}"; return $?;;
     le)
-      is not a number "$1"      && return 1;
-      is not a number "$2"      && return 1;
+      is not a number "$1" && return 1;
+      is not a number "$2" && return 1;
       awk "BEGIN {exit $1 <= $2 ? 0 : 1}"; return $?;;
     eq|equal)
-      [ "$1" = "$2" ]     && return 0;
-      is not a number "$1"      && return 1;
-      is not a number "$2"      && return 1;
+      [ "$1" = "$2" ] && return 0;
+      is not a number "$1" && return 1;
+      is not a number "$2" && return 1;
       awk "BEGIN {exit $1 == $2 ? 0 : 1}"; return $?;;
     match|matching)
       echo "$2" | grep -xE "$1"; return $?;;
