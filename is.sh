@@ -32,7 +32,8 @@ is() {
       'older PATH_A PATH_B' \
       'newer PATH_A PATH_B' \
       'true VALUE' \
-      'false VALUE'
+      'false VALUE' \
+      'set NAME, var NAME, variable NAME'
 
     printf '\nNegation:\n'
     printf "  ${name} %s\n" \
@@ -126,6 +127,10 @@ is() {
       [ "$1" == true ] || [ "$1" == 0 ]; return $?;;
     false)
       [ "$1" != true ] && [ "$1" != 0 ]; return $?;;
+    set|var|variable)
+      # cross-sh-compatible sans `pdksh v5.2.14` treats expanded empty as unset
+      # @see http://mywiki.wooledge.org/BashFAQ/083
+      local x; eval x="\"\${$1+set}\""; [ "$x" = 'set' ]; return $?;;
   esac 1> /dev/null
 
   return 1
