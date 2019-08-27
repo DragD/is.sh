@@ -64,6 +64,8 @@ EOF
         return $?
     fi
 
+  # Note: case statements takes an expression & therefore doesn't need quotes
+  #       it is being kept for consistency
     case "$condition" in
         file)
             [ -f "$value_a" ]; return $?;;
