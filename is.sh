@@ -50,13 +50,8 @@ is() {
     exit 0
   }
 
-  if [ "$1" == '--help' ]; then
-    is::show.help
-  fi
-
-  if [ "$1" == '--version' ]; then
-    is::show.version
-  fi
+  [ "$1" = '--help' ] && is::show.help
+  [ "$1" = '--version' ] && is::show.version
 
   local condition="$1" && shift 1
 
