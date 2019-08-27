@@ -98,8 +98,9 @@ is() {
     empty)
       [ -z "$1" ];;
     number)
-      printf '%s' "$1" \
-        | grep -E '^[-+]?([0-9]+\.?|[0-9]*\.[0-9]+)$' 1> /dev/null;;
+      # for compatibility w/ versions < 3.2, regex must be stored in variable
+      local regex='^[-+]?([0-9]+\.?|[0-9]*\.[0-9]+)$'
+      [[ $1 = *[0-9]* && $1 =~ $regex ]];;
     older)
       [ "$1" -ot "$2" ];;
     newer)
