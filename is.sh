@@ -48,19 +48,17 @@ EOF
         exit
     fi
 
-    local condition="$1"
-    local value_a="$2"
-    local value_b="$3"
+  local condition="$1" && shift 1
+  local value_a="$1"
+  local value_b="$2"
 
   if [ "$condition" = 'not' ]; then
-    shift 1
         ! is "${@}"
         return $?
     fi
 
   if [ "$condition" == 'a' ] || [ "$condition" == 'an' ] \
     || [ "$condition" == 'the' ]; then
-        shift 1
         is "${@}"
         return $?
     fi
