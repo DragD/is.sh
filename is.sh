@@ -126,7 +126,7 @@ is() {
       [ "$1" == true ] || [ "$1" == 0 ]; return $?;;
     false)
       [ "$1" != true ] && [ "$1" != 0 ]; return $?;;
-  esac > /dev/null
+  esac 1> /dev/null
 
   return 1
 }
