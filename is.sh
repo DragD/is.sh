@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-#
-# Copyright (c) 2016 Józef Sokołowski
-# Distributed under the MIT License
-#
-# For most current version checkout repository:
-# https://github.com/qzb/is.sh
-#
+###
+ # @author Józef Sokołowski
+ # @copyright 2015-2019 Józef Sokołowski
+ # @license MIT
+ # @see https://github.com/qzb/is.sh
+##
 
 is() {
     if [ "$1" == "--help" ]; then
