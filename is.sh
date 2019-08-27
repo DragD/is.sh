@@ -58,7 +58,8 @@ EOF
         return $?
     fi
 
-    if [ "$condition" == "a" ] || [ "$condition" == "an" ] || [ "$condition" == "the" ]; then
+  if [ "$condition" == "a" ] || [ "$condition" == "an" ] \
+    || [ "$condition" == "the" ]; then
         shift 1
         is "${@}"
         return $?
