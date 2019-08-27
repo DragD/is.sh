@@ -44,13 +44,18 @@ is() {
         exit 0
     }
 
+    is::show.version() {
+        echo "is.sh 1.1.0"
+
+        exit 0
+    }
+
     if [ "$1" == '--help' ]; then
         is::show.help
     fi
 
     if [ "$1" == '--version' ]; then
-        echo "is.sh 1.1.0"
-        exit
+        is::show.version
     fi
 
   local condition="$1" && shift 1
