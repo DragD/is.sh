@@ -98,7 +98,8 @@ is() {
     empty)
       [ -z "$1" ];;
     number)
-      printf '%s' "$1" | grep -E '^[0-9]+(\.[0-9]+)?$';;
+      printf '%s' "$1" \
+        | grep -E '^[-+]?([0-9]+\.?|[0-9]*\.[0-9]+)$' 1> /dev/null;;
     older)
       [ "$1" -ot "$2" ];;
     newer)
