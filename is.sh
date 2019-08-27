@@ -49,8 +49,6 @@ EOF
     fi
 
   local condition="$1" && shift 1
-  local value_a="$1"
-  local value_b="$2"
 
   if [ "$condition" = 'not' ]; then
         ! is "${@}"
@@ -67,58 +65,58 @@ EOF
   #       it is being kept for consistency
     case "$condition" in
         file)
-            [ -f "$value_a" ]; return $?;;
+            [ -f "$1" ]; return $?;;
         dir|directory)
-            [ -d "$value_a" ]; return $?;;
+            [ -d "$1" ]; return $?;;
         link|symlink)
-            [ -L "$value_a" ]; return $?;;
+            [ -L "$1" ]; return $?;;
         existent|existing|exist|exists)
-            [ -e "$value_a" ]; return $?;;
+            [ -e "$1" ]; return $?;;
         readable)
-            [ -r "$value_a" ]; return $?;;
+            [ -r "$1" ]; return $?;;
         writeable)
-            [ -w "$value_a" ]; return $?;;
+            [ -w "$1" ]; return $?;;
         executable)
-            [ -x "$value_a" ]; return $?;;
+            [ -x "$1" ]; return $?;;
         available|installed)
-            which "$value_a"; return $?;;
+            which "$1"; return $?;;
         empty)
-            [ -z "$value_a" ]; return $?;;
+            [ -z "$1" ]; return $?;;
         number)
-            echo "$value_a" | grep -E '^[0-9]+(\.[0-9]+)?$'; return $?;;
+            echo "$1" | grep -E '^[0-9]+(\.[0-9]+)?$'; return $?;;
         older)
-            [ "$value_a" -ot "$value_b" ]; return $?;;
+            [ "$1" -ot "$2" ]; return $?;;
         newer)
-            [ "$value_a" -nt "$value_b" ]; return $?;;
+            [ "$1" -nt "$2" ]; return $?;;
         gt)
-            is not a number "$value_a"      && return 1;
-            is not a number "$value_b"      && return 1;
-            awk "BEGIN {exit $value_a > $value_b ? 0 : 1}"; return $?;;
+            is not a number "$1"      && return 1;
+            is not a number "$2"      && return 1;
+            awk "BEGIN {exit $1 > $2 ? 0 : 1}"; return $?;;
         lt)
-            is not a number "$value_a"      && return 1;
-            is not a number "$value_b"      && return 1;
-            awk "BEGIN {exit $value_a < $value_b ? 0 : 1}"; return $?;;
+            is not a number "$1"      && return 1;
+            is not a number "$2"      && return 1;
+            awk "BEGIN {exit $1 < $2 ? 0 : 1}"; return $?;;
         ge)
-            is not a number "$value_a"      && return 1;
-            is not a number "$value_b"      && return 1;
-            awk "BEGIN {exit $value_a >= $value_b ? 0 : 1}"; return $?;;
+            is not a number "$1"      && return 1;
+            is not a number "$2"      && return 1;
+            awk "BEGIN {exit $1 >= $2 ? 0 : 1}"; return $?;;
         le)
-            is not a number "$value_a"      && return 1;
-            is not a number "$value_b"      && return 1;
-            awk "BEGIN {exit $value_a <= $value_b ? 0 : 1}"; return $?;;
+            is not a number "$1"      && return 1;
+            is not a number "$2"      && return 1;
+            awk "BEGIN {exit $1 <= $2 ? 0 : 1}"; return $?;;
         eq|equal)
-            [ "$value_a" = "$value_b" ]     && return 0;
-            is not a number "$value_a"      && return 1;
-            is not a number "$value_b"      && return 1;
-            awk "BEGIN {exit $value_a == $value_b ? 0 : 1}"; return $?;;
+            [ "$1" = "$2" ]     && return 0;
+            is not a number "$1"      && return 1;
+            is not a number "$2"      && return 1;
+            awk "BEGIN {exit $1 == $2 ? 0 : 1}"; return $?;;
         match|matching)
-            echo "$value_b" | grep -xE "$value_a"; return $?;;
+            echo "$2" | grep -xE "$1"; return $?;;
         substr|substring)
-            echo "$value_b" | grep -F "$value_a"; return $?;;
+            echo "$2" | grep -F "$1"; return $?;;
         true)
-            [ "$value_a" == true ] || [ "$value_a" == 0 ]; return $?;;
+            [ "$1" == true ] || [ "$1" == 0 ]; return $?;;
         false)
-            [ "$value_a" != true ] && [ "$value_a" != 0 ]; return $?;;
+            [ "$1" != true ] && [ "$1" != 0 ]; return $?;;
     esac > /dev/null
 
     return 1
