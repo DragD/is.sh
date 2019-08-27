@@ -45,7 +45,7 @@ is() {
   }
 
   is::show.version() {
-    echo "is.sh 1.1.0"
+    printf 'is.sh 1.1.0'
 
     exit 0
   }
@@ -88,7 +88,7 @@ is() {
     empty)
       [ -z "$1" ]; return $?;;
     number)
-      echo "$1" | grep -E '^[0-9]+(\.[0-9]+)?$'; return $?;;
+      printf '%s' "$1" | grep -E '^[0-9]+(\.[0-9]+)?$'; return $?;;
     older)
       [ "$1" -ot "$2" ]; return $?;;
     newer)
@@ -115,9 +115,9 @@ is() {
       is not a number "$2" && return 1;
       awk "BEGIN {exit $1 == $2 ? 0 : 1}"; return $?;;
     match|matching)
-      echo "$2" | grep -xE "$1"; return $?;;
+      printf '%s' "$2" | grep -xE "$1"; return $?;;
     substr|substring)
-      echo "$2" | grep -F "$1"; return $?;;
+      printf '%s' "$2" | grep -F "$1"; return $?;;
     true)
       [ "$1" == true ] || [ "$1" == 0 ]; return $?;;
     false)
