@@ -44,12 +44,14 @@ is() {
       'an existing PATH' \
       'the file PATH'
 
+    unset ${BASH_VERSION:+-f}
     exit 0
   }
 
   is::show.version() {
     printf '%s %s\n' "${name}" "${version}"
 
+    unset ${BASH_VERSION:+-f}
     exit 0
   }
 
