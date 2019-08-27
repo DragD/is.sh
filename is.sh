@@ -122,7 +122,8 @@ is() {
     match|matching)
       printf '%s' "$2" | grep -xE "$1"; return $?;;
     substr|substring)
-      printf '%s' "$2" | grep -F "$1"; return $?;;
+      case $2 in
+        *$1*) true;; *) false;; esac;;
     true)
       [ "$1" == true ] || [ "$1" == 0 ]; return $?;;
     false)
