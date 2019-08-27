@@ -7,40 +7,45 @@
 ##
 
 is() {
+    is::show.help() {
+        cat <<- EOF
+					Conditions:
+					  is equal VALUE_A VALUE_B
+					  is matching REGEXP VALUE
+					  is substring VALUE_A VALUE_B
+					  is empty VALUE
+					  is number VALUE
+					  is gt NUMBER_A NUMBER_B
+					  is lt NUMBER_A NUMBER_B
+					  is ge NUMBER_A NUMBER_B
+					  is le NUMBER_A NUMBER_B
+					  is file PATH
+					  is dir PATH
+					  is link PATH
+					  is existing PATH
+					  is readable PATH
+					  is writeable PATH
+					  is executable PATH
+					  is available COMMAND
+					  is older PATH_A PATH_B
+					  is newer PATH_A PATH_B
+					  is true VALUE
+					  is false VALUE
+
+					Negation:
+					  is not equal VALUE_A VALUE_B
+
+					Optional article:
+					  is not a number VALUE
+					  is an existing PATH
+					  is the file PATH
+				EOF
+
+        exit 0
+    }
+
     if [ "$1" == '--help' ]; then
-        cat << EOF
-Conditions:
-  is equal VALUE_A VALUE_B
-  is matching REGEXP VALUE
-  is substring VALUE_A VALUE_B
-  is empty VALUE
-  is number VALUE
-  is gt NUMBER_A NUMBER_B
-  is lt NUMBER_A NUMBER_B
-  is ge NUMBER_A NUMBER_B
-  is le NUMBER_A NUMBER_B
-  is file PATH
-  is dir PATH
-  is link PATH
-  is existing PATH
-  is readable PATH
-  is writeable PATH
-  is executable PATH
-  is available COMMAND
-  is older PATH_A PATH_B
-  is newer PATH_A PATH_B
-  is true VALUE
-  is false VALUE
-
-Negation:
-  is not equal VALUE_A VALUE_B
-
-Optional article:
-  is not a number VALUE
-  is an existing PATH
-  is the file PATH
-EOF
-        exit
+        is::show.help
     fi
 
     if [ "$1" == '--version' ]; then
