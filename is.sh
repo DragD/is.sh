@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Copyright (c) 2016 Józef Sokołowski
 # Distributed under the MIT License
