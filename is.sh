@@ -10,38 +10,39 @@ is() {
   local name="${FUNCNAME[0]}" version='1.1.0'
 
   is::show.help() {
-    cat <<- EOF
-			Conditions:
-			  is equal VALUE_A VALUE_B
-			  is matching REGEXP VALUE
-			  is substring VALUE_A VALUE_B
-			  is empty VALUE
-			  is number VALUE
-			  is gt NUMBER_A NUMBER_B
-			  is lt NUMBER_A NUMBER_B
-			  is ge NUMBER_A NUMBER_B
-			  is le NUMBER_A NUMBER_B
-			  is file PATH
-			  is dir PATH
-			  is link PATH
-			  is existing PATH
-			  is readable PATH
-			  is writeable PATH
-			  is executable PATH
-			  is available COMMAND
-			  is older PATH_A PATH_B
-			  is newer PATH_A PATH_B
-			  is true VALUE
-			  is false VALUE
+    printf 'Conditions:\n'
+    printf "  ${name} %s\n" \
+      'equal VALUE_A VALUE_B' \
+      'matching REGEXP VALUE' \
+      'substring VALUE_A VALUE_B' \
+      'empty VALUE' \
+      'number VALUE' \
+      'gt NUMBER_A NUMBER_B' \
+      'lt NUMBER_A NUMBER_B' \
+      'ge NUMBER_A NUMBER_B' \
+      'le NUMBER_A NUMBER_B' \
+      'file PATH' \
+      'dir PATH' \
+      'link PATH' \
+      'existing PATH' \
+      'readable PATH' \
+      'writeable PATH' \
+      'executable PATH' \
+      'available COMMAND' \
+      'older PATH_A PATH_B' \
+      'newer PATH_A PATH_B' \
+      'true VALUE' \
+      'false VALUE'
 
-			Negation:
-			  is not equal VALUE_A VALUE_B
+    printf '\nNegation:\n'
+    printf "  ${name} %s\n" \
+      'not equal VALUE_A VALUE_B'
 
-			Optional article:
-			  is not a number VALUE
-			  is an existing PATH
-			  is the file PATH
-		EOF
+    printf '\nOptional article:\n'
+    printf "  ${name} %s\n" \
+      'not a number VALUE' \
+      'an existing PATH' \
+      'the file PATH'
 
     exit 0
   }
