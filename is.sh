@@ -33,7 +33,12 @@ is() {
       'newer PATH_A PATH_B' \
       'true VALUE' \
       'false VALUE' \
-      'set NAME, var NAME, variable NAME'
+      'set NAME, var NAME, variable NAME' \
+      'false VALUE' \
+      'alias NAME' \
+      'builtin NAME' \
+      'function NAME, fn NAME' \
+      'keyword NAME'
 
     printf '\nNegation:\n'
     printf "  ${name} %s\n" \
@@ -132,6 +137,17 @@ is() {
       # cross-sh-compatible sans `pdksh v5.2.14` treats expanded empty as unset
       # @see http://mywiki.wooledge.org/BashFAQ/083
       local x; eval x="\"\${$1+set}\""; [ "$x" = 'set' ]; return $?;;
+    alias)
+      is '_type' 'alias' "$1" || [ "${BASH_ALIASES[$1]+"set"}" = 'set' ]; return $?;;
+    builtin)
+      is '_type' 'builtin' "$1"; return $?;;
+    fn|function)
+      is '_type' 'function' "$1"; return $?;;
+    keyword)
+      is '_type' 'keyword' "$1"; return $?;;
+    _type)
+      LANG=C \type ${BASH_VERSION:+-t} "$2" 2> /dev/null \
+        | \grep "${KSH_VERSION:+"$2 is a "}$1" 1> /dev/null; return $?;;
   esac 1> /dev/null
 
   return 1
