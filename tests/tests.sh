@@ -213,4 +213,5 @@ assert_true "$is --help"
 assert_false "$is spam foo bar"
 
 # end of tests
+# shellcheck disable=SC2119
 assert_end
