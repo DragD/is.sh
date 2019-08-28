@@ -148,6 +148,7 @@ is() {
     _type)
       LANG=C \type ${BASH_VERSION:+-t} "$2" 2> /dev/null \
         | \grep "${KSH_VERSION:+"$2 is a "}$1" 1> /dev/null;;
+    *) false ;;
   esac 1> /dev/null
 
   return $?
