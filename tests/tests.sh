@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
-if [ -n "$1" ] && ! which "$1" > /dev/null; then
+declare DIR CMD
+DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)
+CMD="${1:-"$DIR/is.sh"}"
+
+if [ -n "$FILE" ] && ! which "$FILE" > /dev/null; then
     printf '%s not found.\n' "$FILE"
     exit 1
 fi
-
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )"/.. && pwd -P )
-CMD=$(which "${1:-$DIR/is.sh}")
 
 # : 1> file === touch file without calling an external tool
 # read -rst # -n 999 === sleep # without calling an external tool
