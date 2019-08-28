@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ -n "$1" ] && ! which "$1" > /dev/null; then
-    echo "$1 not found"
+    printf '%s not found.\n' "$FILE"
     exit 1
 fi
 
