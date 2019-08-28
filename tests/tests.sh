@@ -40,7 +40,7 @@ assert_false() {
     assert_raises "$1" 1
 }
 
-# shellcheck source=/dev/null
+# shellcheck source=./assert.sh
 . "$DIR/tests/assert.sh"
 
 echo Testing \"$CMD\"
