@@ -106,26 +106,17 @@ is() {
     newer)
       [ "$1" -nt "$2" ];;
     gt)
-      is not a number "$1" && return 1;
-      is not a number "$2" && return 1;
-      awk "BEGIN {exit $1 > $2 ? 0 : 1}";;
+      is '_compare' "${@}" '>';;
     lt)
-      is not a number "$1" && return 1;
-      is not a number "$2" && return 1;
-      awk "BEGIN {exit $1 < $2 ? 0 : 1}";;
+      is '_compare' "${@}" '<';;
     ge)
-      is not a number "$1" && return 1;
-      is not a number "$2" && return 1;
-      awk "BEGIN {exit $1 >= $2 ? 0 : 1}";;
+      is '_compare' "${@}" '>=';;
     le)
-      is not a number "$1" && return 1;
-      is not a number "$2" && return 1;
-      awk "BEGIN {exit $1 <= $2 ? 0 : 1}";;
+      is '_compare' "${@}" '<=';;
     eq|equal)
-      [ "$1" = "$2" ] && return 0;
-      is not a number "$1" && return 1;
-      is not a number "$2" && return 1;
-      awk "BEGIN {exit $1 == $2 ? 0 : 1}";;
+      [ "$1" = "$2" ] || is '_compare' "${@}" '==';;
+    _compare)
+      is number "$1" && is number "$2" && awk "BEGIN {exit $1 $3 $2 ? 0 : 1}";;
     match|matching)
       printf '%s' "$2" | grep -xE "$1";;
     substr|substring)
