@@ -46,17 +46,19 @@ printf 'Running tests\n' && {
   assert_true  'file' './file' './symlink_file'
   assert_false 'file' './dir' './symlink_dir' './nothing'
 
-  # is directory
-  assert_true  'directory' './dir' './symlink_dir'
+  # is dir|directory
+  assert_true  'dir' './dir' './symlink_dir'
   assert_false 'directory' './file' './symlink_file' './nothing'
 
-  # is link
+  # is link|symlink
   assert_false 'link' './file' './dir' './nothing'
-  assert_true  'link' './symlink_file' './symlink_dir'
+  assert_true  'symlink' './symlink_file' './symlink_dir'
 
-  # is existent
+  # is existent|exist|exists|existing
   assert_true  'existent' './file' './symlink_file' './dir' './symlink_dir'
-  assert_false 'existent' './nothing'
+  assert_true  'exist' './file'
+  assert_true  'exists' './file'
+  assert_false 'existing' './nothing'
 
   # is writable
   assert_true  'writeable' './file'
@@ -70,9 +72,9 @@ printf 'Running tests\n' && {
   assert_true  'executable' './file'
   assert_false 'executable' './forbidden_file'
 
-  # is available
+  # is available|installed
   assert_true  'available' 'which'
-  assert_false 'available' 'witch'
+  assert_false 'installed' 'witch'
 
   # is empty
   assert_true  'empty' '' '""'
@@ -106,16 +108,16 @@ printf 'Running tests\n' && {
   assert_true  'le' '111 222.0' '222 222.0'
   assert_false 'le' '333 222.0' 'abc 222' '222 abc' 'abc abc'
 
-  # is equal
-  assert_true  'equal' 'abc abc' '222 222.0'
+  # is eq|equal
+  assert_true  'eq' 'abc abc' '222 222.0'
   assert_false 'equal' '333 222.0' '111 222.0' 'abc 222' '222 abc'
 
-  # is matching
-  assert_true  'matching' '"[a-c]+" "abc"'
+  # is match|matching
+  assert_true  'match' '"[a-c]+" "abc"'
   assert_false 'matching' '"[a-c]+" "Abc"' '"[a-c]+" "abd"'
 
-  # is substring
-  assert_true  'substring' 'cde abcdef'
+  # is substr|substring
+  assert_true  'substr' 'cde abcdef'
   assert_false 'substring' 'cdf abcdef'
 
   # is true
@@ -139,17 +141,6 @@ printf 'Running tests\n' && {
   assert_true  'not a number' 'abc'
   assert_true  'not an number' 'abc'
   assert_true  'not the number' 'abc'
-
-  # test aliases
-  assert_true  'dir' './dir'
-  assert_true  'symlink' './symlink_file'
-  assert_true  'existing' './file'
-  assert_true  'exist' './file'
-  assert_true  'exists' './file'
-  assert_true  'eq' '222 222.0'
-  assert_true  'match' '"^[a-c]+$" "abc"'
-  assert_true  'substr' 'cde abcdef'
-  assert_true  'installed' 'which'
 
   # --version
   assert_true '--version'
