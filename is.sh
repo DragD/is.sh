@@ -45,18 +45,17 @@ is() {
       'the file PATH'
 
     unset ${BASH_VERSION:+-f}
-    exit 0
   }
 
   is::show.version() {
     printf '%s %s\n' "${name}" "${version}"
 
     unset ${BASH_VERSION:+-f}
-    exit 0
   }
 
-  [ "$1" = '--help' ] && is::show.help
-  [ "$1" = '--version' ] && is::show.version
+  [ "$#" -eq 0 ] && is::show.version && is::show.help && return 0
+  [ "$1" = '--help' ] && is::show.help && return 0
+  [ "$1" = '--version' ] && is::show.version && return 0
 
   local condition="$1" && shift 1
 
