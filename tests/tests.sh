@@ -148,6 +148,9 @@ printf 'Running tests\n' && {
   # help
   assert_true '--help'
 
+  # no args
+  assert_true ''
+
   # unknown condition
   assert_false 'spam' 'foo bar'
 } && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
