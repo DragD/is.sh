@@ -44,13 +44,9 @@ assert_false() {
 # shellcheck source=./assert.sh
 . "$DIR/tests/assert.sh"
 
-echo Testing \"$CMD\"
-#
 # Tests
-#
-
 is="$CMD"
-
+printf 'Running tests\n' && {
 # is file
 assert_true  "$is file ./file"
 assert_true  "$is file ./symlink_file"
@@ -212,6 +208,7 @@ assert_true "$is --help"
 
 # unknown condition
 assert_false "$is spam foo bar"
+} && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
 
 # end of tests
 # shellcheck disable=SC2119
