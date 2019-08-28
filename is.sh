@@ -10,8 +10,8 @@ is() {
   local name="${FUNCNAME[0]}" version='1.1.0'
 
   is::show.help() {
-    printf 'Conditions:\n'
-    printf "  ${name} %s\n" \
+    command printf 'Conditions:\n'
+    command printf "  ${name} %s\n" \
       'equal VALUE_A VALUE_B' \
       'matching REGEXP VALUE' \
       'substring VALUE_A VALUE_B' \
@@ -40,23 +40,23 @@ is() {
       'function NAME, fn NAME' \
       'keyword NAME'
 
-    printf '\nNegation:\n'
-    printf "  ${name} %s\n" \
+    command printf '\nNegation:\n'
+    command printf "  ${name} %s\n" \
       'not equal VALUE_A VALUE_B'
 
-    printf '\nOptional article:\n'
-    printf "  ${name} %s\n" \
+    command printf '\nOptional article:\n'
+    command printf "  ${name} %s\n" \
       'not a number VALUE' \
       'an existing PATH' \
       'the file PATH'
 
-    unset ${BASH_VERSION:+-f}
+    command unset ${BASH_VERSION:+-f}
   }
 
   is::show.version() {
-    printf '%s %s\n' "${name}" "${version}"
+    command printf '%s %s\n' "${name}" "${version}"
 
-    unset ${BASH_VERSION:+-f}
+    command unset ${BASH_VERSION:+-f}
   }
 
   [ "$#" -eq 0 ] && is::show.version && is::show.help && return 0
@@ -116,9 +116,10 @@ is() {
     eq|equal)
       [ "$1" = "$2" ] || is '_compare' "${@}" '==';;
     _compare)
-      is number "$1" && is number "$2" && awk "BEGIN {exit $1 $3 $2 ? 0 : 1}";;
+      is number "$1" && is number "$2" \
+        && command awk "BEGIN {exit $1 $3 $2 ? 0 : 1}";;
     match|matching)
-      printf '%s' "$2" | grep -xE "$1";;
+      command printf '%s' "$2" | command grep -xE "$1";;
     substr|substring)
       case $2 in
         *$1*) true;; *) false;; esac;;
@@ -139,8 +140,8 @@ is() {
     keyword)
       is '_type' 'keyword' "$1";;
     _type)
-      LANG=C \type ${BASH_VERSION:+-t} "$2" 2> /dev/null \
-        | \grep "${KSH_VERSION:+"$2 is a "}$1" 1> /dev/null;;
+      LANG=C command type ${BASH_VERSION:+-t} "$2" 2> /dev/null \
+        | command grep "${KSH_VERSION:+"$2 is a "}$1" 1> /dev/null;;
     *) false ;;
   esac 1> /dev/null
 
