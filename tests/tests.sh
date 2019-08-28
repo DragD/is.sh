@@ -8,11 +8,6 @@ fi
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )"/.. && pwd -P )
 CMD=$(which "${1:-$DIR/is.sh}")
 
-# shellcheck source=/dev/null
-. "$DIR/tests/assert.sh"
-
-echo Testing \"$CMD\"
-
 # : 1> file === touch file without calling an external tool
 # read -rst # -n 999 === sleep # without calling an external tool
 # Prepare working directory
@@ -45,7 +40,10 @@ assert_false() {
     assert_raises "$1" 1
 }
 
+# shellcheck source=/dev/null
+. "$DIR/tests/assert.sh"
 
+echo Testing \"$CMD\"
 #
 # Tests
 #
