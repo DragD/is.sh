@@ -13,24 +13,25 @@ CMD=$(which "${1:-$DIR/is.sh}")
 
 echo Testing \"$CMD\"
 
-
-#
+# : 1> file === touch file without calling an external tool
+# read -rst # -n 999 === sleep # without calling an external tool
 # Prepare working directory
-#
-
+printf 'Warming tests\n' && {
 cd "$(mktemp -d)" || exit 1
 
-touch file
-chmod 777 file
-touch forbidden_file
-chmod 000 forbidden_file
-touch old_file
-sleep 2
-touch new_file
-mkdir dir
-ln -s file symlink_file
-ln -s dir symlink_dir
+  : 1> 'forbidden_file'
+  chmod 000 'forbidden_file'
 
+  : 1> 'old_file'
+  read -rst 1 -n 999
+  : 1> 'new_file'
+
+  : 1> 'file'
+  chmod 777 'file'
+  mkdir 'dir'
+  ln -s 'file' 'symlink_file'
+  ln -s 'dir' 'symlink_dir'
+} && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
 
 #
 # Helpers
