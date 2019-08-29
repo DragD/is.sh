@@ -28,6 +28,10 @@ printf 'Warming tests\n' && {
   ln -s 'dir' 'symlink_dir'
 
   command alias myAlias=''
+
+  declare var_declared
+  declare var_initialized='' var_unset=''
+  command unset ${BASH_VERSION+-v} var_unset
 } && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
 
 # Helpers
@@ -171,6 +175,10 @@ printf 'Running tests\n' && {
   # is fn|function
   assert_true  'fn' '_assert_raises'
   assert_false 'function' 'CMD'
+
+  # is set|var|variable
+  assert_true  'set' 'var_initialized'
+  assert_false 'var' 'var_declared' 'var_undeclared' 'var_unset'
 } && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
 
 # end of tests
