@@ -33,6 +33,28 @@ printf 'Warming tests\n' && {
   declare var_declared
   declare var_initialized='' var_unset=''
   command unset ${BASH_VERSION+-v} var_unset
+
+  declare bell=$'\a' backspace=$'\b'
+  declare needle=':'
+  declare -a array_empty=()
+  declare -a array_withNeedle=(':')
+  declare -a array_withoutNeedle=('a' '' 0 true)
+  declare -a array_withNeedleasSubstring=(
+    " ${needle}"
+    "\\$needle"
+    "${backspace}${needle}"
+    "${bell}${backspace}${needle}"
+    "${bell}${needle}"
+    "${needle} "
+    "${needle}\a"
+    "${needle}${backspace}"
+    "${needle}${bell}"
+    "${needle}${bell}${backspace}"
+    "${needle}a"
+    "${needle}a${needle}"
+    "a${needle}"
+    ''
+  )
 } && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
 
 # Helpers
@@ -180,6 +202,12 @@ printf 'Running tests\n' && {
   # is set|var|variable
   assert_true  'set' 'var_initialized'
   assert_false 'var' 'var_declared' 'var_undeclared' 'var_unset'
+
+  # is in
+  assert_true  'in' "$needle array_withNeedle"
+  assert_false 'in' "$needle array_empty" "$needle array_withoutNeedle" \
+    "$needle array_withNeedleasSubstring"
+    assert_false 'in' 'a apple' # this may change
 } && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
 
 # end of tests

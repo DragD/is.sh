@@ -142,6 +142,12 @@ is() {
     _type)
       LANG=C command type ${BASH_VERSION:+-t} "$2" 2> /dev/null \
         | command grep "${KSH_VERSION:+"$2 is a "}$1" 1> /dev/null;;
+    in)
+      # currently does not handle being passed in a string instead of an array
+      # use a subshell so as to preserve $IFS
+      ( local localarray IFS=$'\a\b\a'
+      eval "localarray=( \"\${$2[@]}\" )"
+      is 'substring' "$IFS$1$IFS" "$IFS${localarray[*]}$IFS" );;
     *) false ;;
   esac 1> /dev/null
 
