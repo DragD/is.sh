@@ -7,7 +7,7 @@
 ##
 
 is() {
-  local name="${FUNCNAME[0]}" version='1.1.0'
+  local name="${FUNCNAME[0]}" version='1.1.2'
 
   is::show.help() {
     command printf 'Conditions:\n'
