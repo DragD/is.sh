@@ -11,6 +11,7 @@ FILE="${1:-"$DIR/is.sh"}"
 # : 1> file === touch file without calling an external tool
 # read -rst # -n 999 === sleep # without calling an external tool
 # Prepare working directory
+# shellcheck disable=SC2034
 printf 'Warming tests\n' && {
   cd "$(mktemp -d)" || exit 1
 
