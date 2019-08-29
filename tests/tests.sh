@@ -208,6 +208,10 @@ printf 'Running tests\n' && {
   assert_false 'in' "$needle array_empty" "$needle array_withoutNeedle" \
     "$needle array_withNeedleasSubstring"
     assert_false 'in' 'a apple' # this may change
+
+  # is cmd|command
+  assert_true  'cmd' 'which'
+  assert_false 'command' 'witch'
 } && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
 
 # end of tests

@@ -95,6 +95,8 @@ is() {
       [ -x "$1" ];;
     available|installed)
       which "$1";;
+    cmd|command)
+      command -v "$1" -- 2> /dev/null;;
     empty)
       [ -z "$1" ];;
     number)
