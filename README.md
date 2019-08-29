@@ -8,15 +8,13 @@ Fancy alternative for old good test command.
 ## Example
 
 ```sh
-var=123
+declare var=123
 
-if is equal $var 123.0; then
-    echo "it just works"
-fi
+$ is equal "$var" 123.0 && printf 'it just works!\n'
+it just works
 
-if is not a substring $var "foobar"; then
-    echo "and it's easy to read"
-fi
+$ is not a substring "$var" 'foobar' && printf "and it is easy to read\n"
+and it is easy to read
 ```
 
 ## Installation
@@ -25,52 +23,63 @@ In order to use is.sh you can install it with one of following 1-liners:
 
 ```sh
 # Unix-like
-$ sudo sh -c 'cd /usr/local/bin && wget raw.githubusercontent.com/qzb/is.sh/latest/is.sh -O is && chmod +x is'
+$ sudo sh -c 'cd /usr/local/bin \
+  && wget raw.githubusercontent.com/qzb/is.sh/latest/is.sh -O is \
+  && chmod +x is'
 
 # NPM
 $ npm install -g is.sh
 ```
 
-If you don't want to install is.sh system-wide you can just download it and source it from your script:
+If you don't want to install is.sh system-wide you can just download it and
+  source it from your script:
 
 ```sh
-$ wget raw.githubusercontent.com/qzb/is.sh/latest/is.sh
-$ source ./is.sh
+# retrieve and source
+$ wget raw.githubusercontent.com/qzb/is.sh/latest/is.sh && . ./is.sh
+
 ```
 
 ## Usage
 
+* `is` without arguments will print out version followed by usage
+* `is --help` - displays usage
+* `is --version` - displays version
+
 ### Conditions
 
-* ``is equal $valueA $valueB`` - checks if values are the same or if they are equal numbers
-* ``is matching $regexp $value`` - checks if whole value matches to regular expression
-* ``is substring $valueA $valueB`` - checks if first value is a part of second one
-* ``is empty $value`` - checks if value is empty
-* ``is number $value`` - checks if value is a number
-* ``is gt $numberA $numberB`` - true if first number is greater than second one
-* ``is lt $numberA $numberB`` - true if first number is less than second one
-* ``is ge $numberA $numberB`` - true if first number is greater than or equal to second one
-* ``is le $numberA $numberB`` - true if first number is less than or equal to second one
-* ``is file $path`` - checks if it is a file
-* ``is dir $path`` - checks if it is a directory
-* ``is link $path`` - checks if it is a symbolic link
-* ``is existent $path`` - checks if there is a file or directory or anything else with this path
-* ``is readable $path`` - checks if file is readable
-* ``is writeable $path`` - checks if file is writeable
-* ``is executable $path`` - checks if file is executable
-* ``is available $command`` - checks if given command is available
-* ``is older $pathA $pathB`` - checks if first file is older than second one
-* ``is newer $pathA $pathB`` - checks if first file is newer than second one
-* ``is true $value`` - true if value is equal "true" or "0"
-* ``is false $value`` - opposite of ``is true $value``
+checks if...
+
+* `is equal "$valueA" "$valueB"` - 1st value is identical||equivalent to the 2nd
+* `is matching "$regex" "$value"` - whole value matches the regular expression
+* `is substring "$valueA" "$valueB"` - 1st value is a part of the 2nd
+* `is empty "$value"` - value is empty
+* `is number "$value"` - value is a number
+* `is gt "$numberA" "$numberB"` - 1st number is greater than the 2nd
+* `is lt "$numberA" "$numberB"` - 1st number is less than the 2nd
+* `is ge "$numberA" "$numberB"` - 1st number is greater than or equal to the 2nd
+* `is le "$numberA" "$numberB"` - 1st number is less than or equal to the 2nd
+* `is file "$path"` - path is a file
+* `is dir "$path"` - path is a directory
+* `is link "$path"` - path is a symbolic link
+* `is existent "$path"` - there is anything at this path
+* `is readable "$path"` - path is readable
+* `is writeable "$path"` - path is writeable
+* `is executable "$path"` - path is executable
+* `is available "$command"` - command is available
+* `is older "$pathA" "$pathB"` - 1st path is older than the 2nd
+* `is newer "$pathA" "$pathB"` - 1st path is newer than the 2nd
+* `is true "$value"` - value is equal to `true` or `0`
+* `is false "$value"` - value is not equal to `true` and not equal to `0`
 
 ### Negations
 
 You can negate any condition by putting *not* in front of it.
 
 ```sh
-$ is number "abc" && echo "number"
-$ is not number "abc" && echo "not a number"
+$ is number '123' && printf 'number'
+number
+$ is not number 'abc' && printf 'not a number'
 not a number
 ```
 
@@ -79,14 +88,15 @@ not a number
 You can add *a*, *an*, and *the* articles before condition name.
 
 ```sh
-$ is a number 5
-$ is not a substring abc defghi
+$ is a number 5; printf '%s\n' $?
+0
+$ is not a substring abc defghi; printf '%s\n' $?
+1
 ```
 
 ## License
 
 MIT
-
 
 [npm-image]: https://img.shields.io/npm/v/is.sh.svg
 [npm-url]: https://npmjs.org/package/is.sh
