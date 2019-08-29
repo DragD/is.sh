@@ -157,6 +157,24 @@ printf 'Running tests\n' && {
   assert_true  'false' 'abc' '1' '-12'
   assert_false 'false' 'true' '0'
 
+  # is bool|boolean
+  assert_true 'bool' \
+    0 true 'True' 'TRUE' 't' 'T' 'yes' 'Yes' 'YES' 'y' 'Y' 'on' 'On' 'ON' \
+    1 false 'FALSE' 'False' 'f' 'F' 'no' 'No' 'NO' 'n' 'N' 'off' 'Off' 'OFF'
+  _assert_raises 2 'boolean' 'abc' -1 2
+
+  # # is truthy
+  assert_true 'truthy' \
+    0 true 'True' 'TRUE' 't' 'T' 'yes' 'Yes' 'YES' 'y' 'Y' 'on' 'On' 'ON'
+  assert_false 'truthy' \
+    1 false 'FALSE' 'False' 'f' 'F' 'no' 'No' 'NO' 'n' 'N' 'off' 'Off' 'OFF'
+
+  # # is falsey
+  assert_true 'falsey' \
+    1 false 'FALSE' 'False' 'f' 'F' 'no' 'No' 'NO' 'n' 'N' 'off' 'Off' 'OFF'
+  assert_false 'falsey' \
+    0 true 'True' 'TRUE' 't' 'T' 'yes' 'Yes' 'YES' 'y' 'Y' 'on' 'On' 'ON'
+
   # negation
   assert_true  'not number' 'abc'
   assert_true  'not equal' 'abc def'

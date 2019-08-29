@@ -129,6 +129,14 @@ is() {
       [ "$1" == true ] || [ "$1" == 0 ];;
     false)
       [ "$1" != true ] && [ "$1" != 0 ];;
+    bool|boolean)
+      is 'truthy' "$1" || is 'falsey' "$1" || return 2;;
+    truthy)
+      case "$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')" in
+        0|t|y|true|yes|on) true;; *) false;; esac;;
+    falsey)
+      case "$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')" in
+        1|f|n|false|no|off) true;; *) false;; esac;;
     set|var|variable)
       # cross-sh-compatible sans `pdksh v5.2.14` treats expanded empty as unset
       # @see http://mywiki.wooledge.org/BashFAQ/083
