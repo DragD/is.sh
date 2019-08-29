@@ -71,6 +71,11 @@ checks if...
 * `is newer "$pathA" "$pathB"` - 1st path is newer than the 2nd
 * `is true "$value"` - value is equal to `true` or `0`
 * `is false "$value"` - value is not equal to `true` and not equal to `0`
+* `is alias name` - name is an alias
+* `is builtin name` - name is a builtin
+* `is function name` - name is a function
+* `is keyword name` - name is a keyword
+* `is in "$value" arrayName` - value is in the array
 
 ### Negations
 
@@ -93,6 +98,10 @@ $ is a number 5; printf '%s\n' $?
 $ is not a substring abc defghi; printf '%s\n' $?
 1
 ```
+
+### Examples
+
+See the [tests](./tests/tests.sh) file for examples.
 
 ## License
 
