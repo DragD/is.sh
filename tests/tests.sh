@@ -26,6 +26,8 @@ printf 'Warming tests\n' && {
   mkdir 'dir'
   ln -s 'file' 'symlink_file'
   ln -s 'dir' 'symlink_dir'
+
+  command alias myAlias=''
 } && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
 
 # Helpers
@@ -153,6 +155,22 @@ printf 'Running tests\n' && {
 
   # unknown condition
   assert_false 'spam' 'foo bar'
+
+  # is alias
+  assert_true  'alias' 'myAlias'
+  assert_false 'alias' 'CMD'
+
+  # is builtin
+  assert_true  'builtin' 'printf' 'true'
+  assert_false 'builtin' 'grep'
+
+  # is keyword
+  assert_true  'keyword' 'if' 'while'
+  assert_false 'keyword' 'CMD'
+
+  # is fn|function
+  assert_true  'fn' '_assert_raises'
+  assert_false 'function' 'CMD'
 } && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
 
 # end of tests
