@@ -13,13 +13,13 @@ FILE="${1:-"$DIR/is.sh"}"
 # Prepare working directory
 # shellcheck disable=SC2034
 printf 'Warming tests\n' && {
-  cd "$(mktemp -d)" || exit 1
+  command cd "$(mktemp -d)" || exit 1
 
   : 1> 'forbidden_file'
   chmod 000 'forbidden_file'
 
   : 1> 'old_file'
-  read -rst 1 -n 999
+  command read -rst 1 -n 999
   : 1> 'new_file'
 
   : 1> 'file'
