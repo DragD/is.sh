@@ -15,46 +15,78 @@ FILE="${1:-"$DIR/is.sh"}"
 printf 'Warming tests\n' && {
   command cd "$(mktemp -d)" || exit 1
 
-  : 1> 'forbidden_file'
-  chmod 000 'forbidden_file'
+  declare var_declared \
+    path_file_inexistent='./file_inexistent' \
+    path_file_old='./file_old' \
+    path_file_new='./file_new' \
+    path_file_forbidden='./file_forbidden' \
+    path_file_abs="${PWD}/file_abs" \
+    path_file_rel='./file_rel' \
+    path_file_symlink='file_symlink' \
+    path_dir_abs="${PWD}/dir_abs" \
+    path_dir_rel='./dir_rel' \
+    path_dir_symlink='dir_symlink'
 
-  : 1> 'old_file'
+  declare var_unset=''
+  command unset ${BASH_VERSION+-v} var_unset
+
+  declare string='string' substr='str' not_substr="rts" string_empty=''
+
+  : 1> 'file_forbidden'
+  chmod 000 'file_forbidden'
+
+  : 1> $path_file_old
   command read -rst 1 -n 999
-  : 1> 'new_file'
+  : 1> $path_file_new
 
-  : 1> 'file'
-  chmod 777 'file'
-  mkdir 'dir'
-  ln -s 'file' 'symlink_file'
-  ln -s 'dir' 'symlink_dir'
+  : 1> $path_file_abs
+  : 1> $path_file_rel
+  chmod 777 $path_file_rel
+  mkdir $path_dir_rel $path_dir_abs
+  ln -s $path_file_rel $path_file_symlink
+  ln -s $path_dir_rel $path_dir_symlink
 
   command alias myAlias=''
 
-  declare var_declared
-  declare var_initialized='' var_unset=''
-  command unset ${BASH_VERSION+-v} var_unset
-
   declare bell=$'\a' backspace=$'\b'
   declare needle=':'
-  declare -a array_empty=()
-  declare -a array_withNeedle=(':')
-  declare -a array_withoutNeedle=('a' '' 0 true)
-  declare -a array_withNeedleasSubstring=(
-    " ${needle}"
-    "\\$needle"
-    "${backspace}${needle}"
-    "${bell}${backspace}${needle}"
-    "${bell}${needle}"
-    "${needle} "
-    "${needle}\a"
-    "${needle}${backspace}"
-    "${needle}${bell}"
-    "${needle}${bell}${backspace}"
-    "${needle}a"
-    "${needle}a${needle}"
-    "a${needle}"
-    ''
-  )
+  declare -a array_empty=() \
+    array_withNeedle=(':') \
+    array_withoutNeedle=('a' '' 0 true) \
+    array_withNeedleasSubstring=(
+      " ${needle}"
+      "\\${needle}"
+      "${backspace}${needle}"
+      "${bell}${backspace}${needle}"
+      "${bell}${needle}"
+      "${needle} "
+      "${needle}\a"
+      "${needle}${backspace}"
+      "${needle}${bell}"
+      "${needle}${bell}${backspace}"
+      "${needle}a"
+      "${needle}a${needle}"
+      "a${needle}"
+      ''
+    ) \
+    falsey=(1 false 'FALSE' 'F' 'No' 'n' 'OFF') \
+    truthy=(0 true 'True' 't' 'YES' 'Y' 'on')
+
+  # note: `$uint64` evaluates to zero
+  declare uint16=$((2**16)) \
+    uint32=$((2**32)) \
+    uint64=$((2**64)) \
+    sint64=$((2**63-1))
+  declare nsint64=$((sint64+1))
+  sint64="+$sint64"
+
+  declare udec16="$uint16.0" \
+    sdec16="+$udec16" \
+    nsdec16="-$udec16" \
+    rgb='0011ff' \
+    udec16_comma="$uint16,0" \
+    e_notation="${uint16}e${uint16}" \
+    curreny_usd="\$${uint16}"
 } && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
 
 # Helpers
@@ -72,145 +104,144 @@ assert_false() { _assert_raises 1 "${1}" "${@:2}"; }
 # Tests
 printf 'Running tests\n' && {
   # is file
-  assert_true  'file' './file' './symlink_file'
-  assert_false 'file' './dir' './symlink_dir' './nothing'
+  assert_true  'file' "$path_file_abs" $path_file_rel $path_file_symlink
+  assert_false 'file' $path_dir_rel $path_dir_symlink $path_file_inexistent
 
   # is dir|directory
-  assert_true  'dir' './dir' './symlink_dir'
-  assert_false 'directory' './file' './symlink_file' './nothing'
+  assert_true  'directory' "$path_dir_abs" $path_dir_rel $path_dir_symlink
+  assert_false 'dir' $path_file_rel $path_file_symlink $path_file_inexistent
 
   # is link|symlink
-  assert_false 'link' './file' './dir' './nothing'
-  assert_true  'symlink' './symlink_file' './symlink_dir'
+  assert_false 'link' $path_file_rel $path_dir_rel $path_file_inexistent
+  assert_true  'symlink' $path_file_symlink $path_dir_symlink
 
   # is existent|exist|exists|existing
-  assert_true  'existent' './file' './symlink_file' './dir' './symlink_dir'
-  assert_true  'exist' './file'
-  assert_true  'exists' './file'
-  assert_false 'existing' './nothing'
+  assert_true  'existent' $path_file_rel $path_file_symlink
+  assert_true  'exist' $path_dir_rel
+  assert_true  'exists' $path_dir_symlink
+  assert_false 'existing' $path_file_inexistent
 
   # is writable
-  assert_true  'writeable' './file'
-  assert_false 'writeable' './forbidden_file'
+  assert_true  'writeable' $path_file_rel
+  assert_false 'writeable' $path_file_forbidden
 
   # is readable
-  assert_true  'readable' './file'
-  assert_false 'readable' './forbidden_file'
+  assert_true  'readable' $path_file_rel
+  assert_false 'readable' $path_file_forbidden
 
   # is executable
-  assert_true  'executable' './file'
-  assert_false 'executable' './forbidden_file'
+  assert_true  'executable' $path_file_rel
+  assert_false 'executable' $path_file_forbidden
 
   # is available|installed
   assert_true  'available' 'which'
   assert_false 'installed' 'witch'
 
   # is empty
-  assert_true  'empty' '' '""'
-  assert_false 'empty' 'abc'
+  assert_true  'empty' "$string_empty" '""'
+  assert_false 'empty' $string
 
   # is number
-  assert_true  'number' '123' '123.456' '-123' '+123'
-  assert_false 'number' 'abc' '123ff' '123,456' '12e3' '+-123'
+  assert_true  'number' $uint16 "$uint16.$uint16" $sint64 $nsint64 $curreny_usd
+  assert_false 'number' $string $rgb $udec16_comma $e_notation "+$nsint64"
 
   # is older
-  assert_true  'older' './old_file ./new_file'
-  assert_false 'older' './new_file ./old_file'
+  assert_true  'older' "$path_file_old $path_file_new"
+  assert_false 'older' "$path_file_new $path_file_old"
 
   # is newer
-  assert_false 'newer' './old_file ./new_file'
-  assert_true  'newer' './new_file ./old_file'
+  assert_false 'newer' "$path_file_old $path_file_new"
+  assert_true  'newer' "$path_file_new $path_file_old"
 
   # is gt
-  assert_true  'gt' '333 222.0'
-  assert_false 'gt' '222 222.0' '111 222.0' 'abc 222' '222 abc' 'abc abc'
+  assert_true  'gt' "$uint32 $udec16" "$uint32 $uint16"
+  assert_false 'gt' "$uint16 $string" "$string $uint16" "$uint16 $udec16" \
+                    "$udec16 $uint32" "$string $string"
 
   # is lt
-  assert_true  'lt' '111 222.0'
-  assert_false 'lt' '222 222.0' '333 222.0' 'abc 222' '222 abc' 'abc abc'
+  assert_true  'lt' "$udec16 $uint32" "$uint16 $uint32"
+  assert_false 'lt' "$uint16 $string" "$string $uint16" "$uint16 $udec16" \
+                    "$uint32 $udec16" "$string $string"
 
   # is ge
-  assert_true  'ge' '333 222.0' '222 222.0'
-  assert_false 'ge' '111 222.0' 'abc 222' '222 abc' 'abc abc'
+  assert_true  'ge' "$uint32 $udec16" "$uint16 $udec16"
+  assert_false 'ge' "$uint16 $string" "$string $uint16" \
+                    "$udec16 $uint32" "$string $string"
 
   # is le
-  assert_true  'le' '111 222.0' '222 222.0'
-  assert_false 'le' '333 222.0' 'abc 222' '222 abc' 'abc abc'
+  assert_true  'le' "$udec16 $uint32" "$uint16 $udec16"
+  assert_false 'le' "$uint16 $string" "$string $uint16" \
+                    "$uint32 $udec16" "$string $string"
 
   # is eq|equal
-  assert_true  'eq' 'abc abc' '222 222.0'
-  assert_false 'equal' '333 222.0' '111 222.0' 'abc 222' '222 abc'
+  assert_true  'eq' "$string $string" "$uint16 $udec16"
+  assert_false 'equal' "$uint16 $string" "$string $uint16" "$udec16 $uint32" \
+                    "$uint32 $udec16"
 
   # is match|matching
-  assert_true  'match' '"[a-c]+" "abc"'
-  assert_false 'matching' '"[a-c]+" "Abc"' '"[a-c]+" "abd"'
+  assert_true  'match' "'[$string]+' '$string'" "'[$string]+' $substr"
+  assert_false 'matching' "[$string]+ ${string^}" "[$string]+ '$not_substr'"
 
   # is substr|substring
-  assert_true  'substr' 'cde abcdef'
-  assert_false 'substring' 'cdf abcdef'
+  assert_true  'substr' "$substr $string"
+  assert_false 'substring' "$not_substr $string"
 
   # is true
-  assert_true  'true' 'true' '0'
-  assert_false 'true' 'abc' '1' '-12'
+  assert_true  'true' 0 true
+  assert_false 'true' 1 false $string $nsint64
 
   # is false
-  assert_true  'false' 'abc' '1' '-12'
-  assert_false 'false' 'true' '0'
+  assert_true  'false' 1 false $string $nsint64
+  assert_false 'false' 0 true
 
   # is bool|boolean
-  assert_true 'bool' \
-    0 true 'True' 'TRUE' 't' 'T' 'yes' 'Yes' 'YES' 'y' 'Y' 'on' 'On' 'ON' \
-    1 false 'FALSE' 'False' 'f' 'F' 'no' 'No' 'NO' 'n' 'N' 'off' 'Off' 'OFF'
-  _assert_raises 2 'boolean' 'abc' -1 2
+  assert_true 'bool' "${truthy[@]}" "${falsey[@]}"
+  _assert_raises 2 'boolean' $string $nsint64 $uint16
 
   # # is truthy
-  assert_true 'truthy' \
-    0 true 'True' 'TRUE' 't' 'T' 'yes' 'Yes' 'YES' 'y' 'Y' 'on' 'On' 'ON'
-  assert_false 'truthy' \
-    1 false 'FALSE' 'False' 'f' 'F' 'no' 'No' 'NO' 'n' 'N' 'off' 'Off' 'OFF'
+  assert_true 'truthy' "${truthy[@]}"
+  assert_false 'truthy' "${falsey[@]}"
 
   # # is falsey
-  assert_true 'falsey' \
-    1 false 'FALSE' 'False' 'f' 'F' 'no' 'No' 'NO' 'n' 'N' 'off' 'Off' 'OFF'
-  assert_false 'falsey' \
-    0 true 'True' 'TRUE' 't' 'T' 'yes' 'Yes' 'YES' 'y' 'Y' 'on' 'On' 'ON'
+  assert_true 'falsey' "${falsey[@]}"
+  assert_false 'falsey' "${truthy[@]}"
 
   # negation
-  assert_true  'not number' 'abc'
-  assert_true  'not equal' 'abc def'
-  assert_false 'not number' '123'
-  assert_false 'not equal' 'abc abc'
+  assert_true  'not number' $string
+  assert_true  'not equal' "$string $substr"
+  assert_false 'not number' $uint16
+  assert_false 'not equal' "$string $string"
 
   # articles
-  assert_true  'a number' '123'
-  assert_true  'an number' '123'
-  assert_true  'the number' '123'
-  assert_true  'not a number' 'abc'
-  assert_true  'not an number' 'abc'
-  assert_true  'not the number' 'abc'
+  assert_true  'a number' $uint16
+  assert_true  'an number' $uint16
+  assert_true  'the number' $uint16
+  assert_true  'not a number' $string
+  assert_true  'not an number' $string
+  assert_true  'not the number' $string
 
-  # --version
+  # version
   assert_true '--version'
 
   # help
   assert_true '--help'
 
   # no args
-  assert_true ''
+  assert_true $string_empty
 
-  # unknown condition
+  # unspported condition
   assert_false 'spam' 'foo bar'
 
   # is alias
-  assert_true  'alias' 'myAlias'
-  assert_false 'alias' 'CMD'
+  assert_true  'alias' myAlias
+  assert_false 'alias' "\$CMD"
 
   # is builtin
-  assert_true  'builtin' 'printf' 'true'
-  assert_false 'builtin' 'grep'
+  assert_true  'builtin' printf true
+  assert_false 'builtin' grep
 
   # is keyword
-  assert_true  'keyword' 'if' 'while'
+  assert_true  'keyword' if while
   assert_false 'keyword' 'CMD'
 
   # is fn|function
@@ -218,7 +249,7 @@ printf 'Running tests\n' && {
   assert_false 'function' 'CMD'
 
   # is set|var|variable
-  assert_true  'set' 'var_initialized'
+  assert_true  'set' 'string_empty'
   assert_false 'var' 'var_declared' 'var_undeclared' 'var_unset'
 
   # is in
