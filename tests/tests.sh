@@ -91,7 +91,7 @@ printf 'Warming tests\n' && {
 
 # Helpers
 _assert_raises() {
-  local args expected=$1 condition=$2 && shift 2
+  local args expected="${1-}" condition="${2-}" && shift 2
   for args in "${@}"; do assert_raises "$CMD $condition $args" "$expected"; done
 }
 
