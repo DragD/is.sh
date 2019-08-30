@@ -103,6 +103,18 @@ assert_false() { _assert_raises 1 "${1}" "${@:2}"; }
 
 # Tests
 printf 'Running tests\n' && {
+  # no args
+  assert_true $string_empty
+
+  # help
+  assert_true '--help'
+
+  # version
+  assert_true '--version'
+
+  # unspported condition
+  assert_false 'spam' 'foo bar'
+
   # is file
   assert_true  'file' "$path_file_abs" $path_file_rel $path_file_symlink
   assert_false 'file' $path_dir_rel $path_dir_symlink $path_file_inexistent
@@ -219,18 +231,6 @@ printf 'Running tests\n' && {
   assert_true  'not a number' $string
   assert_true  'not an number' $string
   assert_true  'not the number' $string
-
-  # version
-  assert_true '--version'
-
-  # help
-  assert_true '--help'
-
-  # no args
-  assert_true $string_empty
-
-  # unspported condition
-  assert_false 'spam' 'foo bar'
 
   # is alias
   assert_true  'alias' myAlias
