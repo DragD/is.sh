@@ -12,10 +12,10 @@ FILE="${1:-"$DIR/is.sh"}"
 # read -rst # -n 999 === sleep # without calling an external tool
 # Prepare working directory
 # shellcheck disable=SC2034
-printf 'Warming tests\n' && {
+test::warm() {
   command cd "$(mktemp -d)" || exit 1
 
-  declare var_declared \
+  declare -g var_declared \
     path_file_inexistent='./file_inexistent' \
     path_file_old='./file_old' \
     path_file_new='./file_new' \
@@ -27,10 +27,10 @@ printf 'Warming tests\n' && {
     path_dir_rel='./dir_rel' \
     path_dir_symlink='dir_symlink'
 
-  declare var_unset=''
+  declare -g var_unset=''
   command unset ${BASH_VERSION+-v} var_unset
 
-  declare string='string' substr='str' not_substr="rts" string_empty=''
+  declare -g string='string' substr='str' not_substr="rts" string_empty=''
 
   : 1> 'file_forbidden'
   chmod 000 'file_forbidden'
@@ -39,18 +39,17 @@ printf 'Warming tests\n' && {
   command read -rst 1 -n 999
   : 1> $path_file_new
 
-  : 1> $path_file_abs
+  : 1> "$path_file_abs"
   : 1> $path_file_rel
   chmod 777 $path_file_rel
-  mkdir $path_dir_rel $path_dir_abs
+  mkdir $path_dir_rel "$path_dir_abs"
   ln -s $path_file_rel $path_file_symlink
   ln -s $path_dir_rel $path_dir_symlink
 
   command alias myAlias=''
 
-  declare bell=$'\a' backspace=$'\b'
-  declare needle=':'
-  declare -a array_empty=() \
+  declare -g bell=$'\a' backspace=$'\b' needle=':'
+  declare -ag array_empty=() \
     array_withNeedle=(':') \
     array_withoutNeedle=('a' '' 0 true) \
     array_withNeedleasSubstring=(
@@ -73,21 +72,21 @@ printf 'Warming tests\n' && {
     truthy=(0 true 'True' 't' 'YES' 'Y' 'on')
 
   # note: `$uint64` evaluates to zero
-  declare uint16=$((2**16)) \
+  declare -g uint16=$((2**16)) \
     uint32=$((2**32)) \
     uint64=$((2**64)) \
     sint64=$((2**63-1))
-  declare nsint64=$((sint64+1))
+  declare -g nsint64=$((sint64+1))
   sint64="+$sint64"
 
-  declare udec16="$uint16.0" \
+  declare -g udec16="$uint16.0" \
     sdec16="+$udec16" \
     nsdec16="-$udec16" \
     rgb='0011ff' \
     udec16_comma="$uint16,0" \
     e_notation="${uint16}e${uint16}" \
     curreny_usd="\$${uint16}"
-} && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
+}
 
 # Helpers
 _assert_raises() {
@@ -98,11 +97,8 @@ _assert_raises() {
 assert_true() { _assert_raises 0 "${1}" "${@:2}"; }
 assert_false() { _assert_raises 1 "${1}" "${@:2}"; }
 
-# shellcheck source=./assert.sh
-. "$DIR/tests/assert.sh"
-
 # Tests
-printf 'Running tests\n' && {
+test::run() {
   # no args
   assert_true $string_empty
 
@@ -261,7 +257,18 @@ printf 'Running tests\n' && {
   # is cmd|command
   assert_true  'cmd' 'which'
   assert_false 'command' 'witch'
-} && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
+}
+
+printf 'Warming Tests\n' \
+  && test::warm \
+  && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
+
+# shellcheck source=./assert.sh
+. "$DIR/tests/assert.sh"
+
+printf 'Running Tests\n' \
+  && test::run \
+  && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
 
 # end of tests
 # shellcheck disable=SC2119
