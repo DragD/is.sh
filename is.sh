@@ -63,7 +63,9 @@ is() {
   [ "$1" = '--help' ] && is::show.help && return 0
   [ "$1" = '--version' ] && is::show.version && return 0
 
-  local condition="$1" && shift 1
+  # Since we currently support bash v3.2.57, we can't use `"${1,,}"`
+  local condition=$1 && shift 1
+  condition="$(printf '%s' "${condition}" | tr '[:upper:]' '[:lower:]')"
 
   if [ "$condition" = 'not' ]; then
     ! is "${@}"
