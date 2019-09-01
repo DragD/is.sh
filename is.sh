@@ -9,7 +9,17 @@
 is() {
   local name="${FUNCNAME[0]}" version='1.1.2'
 
+  # shellcheck disable=SC2016
   is::show.help() {
+    command printf 'Note:\n'
+    command printf ' - %s\n   %s\n' \
+      'The provided condition is case-insensitive.' \
+        'i.e the following conditions are equivalent: `is dir` === `is DIR`' \
+      'Conditions evaluate by value with the exception of those that' \
+        'accept `COMMAND` or `NAME`; they will evaluate by reference.' \
+      'Conditions may have multiple patterns they will match.' \
+        'Those will be listed inline and comma separated.'
+
     command printf 'Conditions:\n'
     command printf "  ${name} %s\n" \
       'equal VALUE_A VALUE_B, eq VALUE_A VALUE_B' \
