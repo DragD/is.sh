@@ -30,7 +30,7 @@ test::warm() {
   declare -g var_unset=''
   command unset ${BASH_VERSION+-v} var_unset
 
-  declare -g string='string' substr='str' not_substr="rts" string_empty=''
+  declare -g val_string='string' val_str='str' val_rtS='rtS' val_string_empty=''
 
   : 1> 'file_forbidden'
   chmod 000 'file_forbidden'
@@ -71,21 +71,20 @@ test::warm() {
     falsey=(1 false 'FALSE' 'F' 'No' 'n' 'OFF') \
     truthy=(0 true 'True' 't' 'YES' 'Y' 'on')
 
-  # note: `$uint64` evaluates to zero
-  declare -g uint16=$((2**16)) \
-    uint32=$((2**32)) \
-    uint64=$((2**64)) \
-    sint64=$((2**63-1))
-  declare -g nsint64=$((sint64+1))
-  sint64="+$sint64"
+  # note: bash's goes up to but excludes uint64 (2**64); it will evaluate to 0
+  declare -g val_uint16=$((2**16)) \
+    val_uint32=$((2**32)) \
+    val_sint64=$((2**63-1))
+  declare -g val_nsint64=$((val_sint64+1))
+  val_sint64="+$val_sint64"
 
-  declare -g udec16="$uint16.0" \
-    sdec16="+$udec16" \
-    nsdec16="-$udec16" \
-    rgb='0011ff' \
-    udec16_comma="$uint16,0" \
-    e_notation="${uint16}e${uint16}" \
-    curreny_usd="\$${uint16}"
+  declare -g val_udec16="$val_uint16.0" \
+    val_sdec16="+$val_udec16" \
+    val_nsdec16="-$val_udec16" \
+    val_rgb='0011ff' \
+    val_udec16_comma="$val_uint16,0" \
+    val_e_notation="${val_uint16}e${val_uint16}" \
+    val_curreny_usd="\$${val_uint16}"
 }
 
 # Helpers
@@ -100,7 +99,7 @@ assert_false() { _assert_raises 1 "${1}" "${@:2}"; }
 # Tests
 test::run() {
   # no args
-  assert_true $string_empty
+  assert_true $val_string_empty
 
   # help
   assert_true '--help'
@@ -146,12 +145,12 @@ test::run() {
   assert_false 'installed' 'witch'
 
   # is empty
-  assert_true  'empty' "$string_empty" '""'
-  assert_false 'empty' $string
+  assert_true  'empty' "$val_string_empty" '""'
+  assert_false 'empty' $val_string
 
   # is number
-  assert_true  'number' $uint16 "$uint16.$uint16" $sint64 $nsint64 $curreny_usd
-  assert_false 'number' $string $rgb $udec16_comma $e_notation "+$nsint64"
+  assert_true  'number' $val_uint16 "$val_uint16.$val_uint16" $val_sint64 $val_nsint64 $val_curreny_usd
+  assert_false 'number' $val_string $val_rgb $val_udec16_comma $val_e_notation "+$val_nsint64"
 
   # is older
   assert_true  'older' "$path_file_old $path_file_new"
@@ -162,49 +161,53 @@ test::run() {
   assert_true  'newer' "$path_file_new $path_file_old"
 
   # is gt
-  assert_true  'gt' "$uint32 $udec16" "$uint32 $uint16"
-  assert_false 'gt' "$uint16 $string" "$string $uint16" "$uint16 $udec16" \
-                    "$udec16 $uint32" "$string $string"
+  assert_true  'gt' "$val_uint32 $val_udec16" "$val_uint32 $val_uint16"
+  assert_false 'gt' "$val_uint16 $val_string" "$val_string $val_uint16" \
+                    "$val_uint16 $val_udec16" "$val_udec16 $val_uint32" \
+                    "$val_string $val_string"
 
   # is lt
-  assert_true  'lt' "$udec16 $uint32" "$uint16 $uint32"
-  assert_false 'lt' "$uint16 $string" "$string $uint16" "$uint16 $udec16" \
-                    "$uint32 $udec16" "$string $string"
+  assert_true  'lt' "$val_udec16 $val_uint32" "$val_uint16 $val_uint32"
+  assert_false 'lt' "$val_uint16 $val_string" "$val_string $val_uint16" \
+                    "$val_uint16 $val_udec16" "$val_uint32 $val_udec16" \
+                    "$val_string $val_string"
 
   # is ge
-  assert_true  'ge' "$uint32 $udec16" "$uint16 $udec16"
-  assert_false 'ge' "$uint16 $string" "$string $uint16" \
-                    "$udec16 $uint32" "$string $string"
+  assert_true  'ge' "$val_uint32 $val_udec16" "$val_uint16 $val_udec16"
+  assert_false 'ge' "$val_uint16 $val_string" "$val_string $val_uint16" \
+                    "$val_udec16 $val_uint32" "$val_string $val_string"
 
   # is le
-  assert_true  'le' "$udec16 $uint32" "$uint16 $udec16"
-  assert_false 'le' "$uint16 $string" "$string $uint16" \
-                    "$uint32 $udec16" "$string $string"
+  assert_true  'le' "$val_udec16 $val_uint32" "$val_uint16 $val_udec16"
+  assert_false 'le' "$val_uint16 $val_string" "$val_string $val_uint16" \
+                    "$val_uint32 $val_udec16" "$val_string $val_string"
 
   # is eq|equal
-  assert_true  'eq' "$string $string" "$uint16 $udec16"
-  assert_false 'equal' "$uint16 $string" "$string $uint16" "$udec16 $uint32" \
-                    "$uint32 $udec16"
+  assert_true  'eq' "$val_string $val_string" "$val_uint16 $val_udec16"
+  assert_false 'equal' "$val_uint16 $val_string" "$val_string $val_uint16" \
+                       "$val_udec16 $val_uint32" "$val_uint32 $val_udec16"
 
   # is match|matching
-  assert_true  'match' "'[$string]+' '$string'" "'[$string]+' $substr"
-  assert_false 'matching' "[$string]+ ${string^}" "[$string]+ '$not_substr'"
+  assert_true  'match' "'[$val_string]+' '$val_string'" \
+                       "'[$val_string]+' $val_str"
+  assert_false 'matching' "[$val_string]+ ${val_string^}" \
+                          "[$val_string]+ '$val_rtS'"
 
-  # is substr|substring
-  assert_true  'substr' "$substr $string"
-  assert_false 'substring' "$not_substr $string"
+  # is val_str|substring
+  assert_true  'substr' "$val_str $val_string"
+  assert_false 'substring' "$val_rtS $val_string"
 
   # is true
   assert_true  'true' 0 true
-  assert_false 'true' 1 false $string $nsint64
+  assert_false 'true' 1 false $val_string $val_nsint64
 
   # is false
-  assert_true  'false' 1 false $string $nsint64
+  assert_true  'false' 1 false $val_string $val_nsint64
   assert_false 'false' 0 true
 
   # is bool|boolean
   assert_true 'bool' "${truthy[@]}" "${falsey[@]}"
-  _assert_raises 2 'boolean' $string $nsint64 $uint16
+  _assert_raises 2 'boolean' $val_string $val_nsint64 $val_uint16
 
   # # is truthy
   assert_true 'truthy' "${truthy[@]}"
@@ -215,18 +218,18 @@ test::run() {
   assert_false 'falsey' "${truthy[@]}"
 
   # negation
-  assert_true  'not number' $string
-  assert_true  'not equal' "$string $substr"
-  assert_false 'not number' $uint16
-  assert_false 'not equal' "$string $string"
+  assert_true  'not number' $val_string
+  assert_true  'not equal' "$val_string $val_str"
+  assert_false 'not number' $val_uint16
+  assert_false 'not equal' "$val_string $val_string"
 
   # articles
-  assert_true  'a number' $uint16
-  assert_true  'an number' $uint16
-  assert_true  'the number' $uint16
-  assert_true  'not a number' $string
-  assert_true  'not an number' $string
-  assert_true  'not the number' $string
+  assert_true  'a number' $val_uint16
+  assert_true  'an number' $val_uint16
+  assert_true  'the number' $val_uint16
+  assert_true  'not a number' $val_string
+  assert_true  'not an number' $val_string
+  assert_true  'not the number' $val_string
 
   # is alias
   assert_true  'alias' myAlias
@@ -245,7 +248,7 @@ test::run() {
   assert_false 'function' 'CMD'
 
   # is set|var|variable
-  assert_true  'set' 'string_empty'
+  assert_true  'set' 'val_string_empty'
   assert_false 'var' 'var_declared' 'var_undeclared' 'var_unset'
 
   # is in
