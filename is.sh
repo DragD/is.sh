@@ -101,7 +101,7 @@ is() {
       command -v "$1" -- 2> /dev/null;;
     empty)
       [ -z "$1" ];;
-    number)
+    num|number)
       # for compatibility w/ versions < 3.2, regex must be stored in variable
       local regex='^[-+]?([0-9]+\.?|[0-9]*\.[0-9]+)$'
       [[ $1 = *[0-9]* && $1 =~ $regex ]];;
