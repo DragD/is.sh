@@ -12,33 +12,40 @@ is() {
   is::show.help() {
     command printf 'Conditions:\n'
     command printf "  ${name} %s\n" \
-      'equal VALUE_A VALUE_B' \
-      'matching REGEXP VALUE' \
-      'substring VALUE_A VALUE_B' \
+      'equal VALUE_A VALUE_B, eq VALUE_A VALUE_B' \
+      'matching REGEXP VALUE, match REGEXP VALUE' \
+      'substring VALUE_A VALUE_B, substr VALUE_A VALUE_B' \
       'empty VALUE' \
-      'number VALUE' \
+      'number VALUE, num VALUE' \
       'gt NUMBER_A NUMBER_B' \
       'lt NUMBER_A NUMBER_B' \
       'ge NUMBER_A NUMBER_B' \
       'le NUMBER_A NUMBER_B' \
       'file PATH' \
-      'dir PATH' \
-      'link PATH' \
-      'existing PATH' \
+      'dir PATH, directory PATH' \
+      'link PATH, symlink PATH' \
+      'existent PATH, existing PATH, exist PATH, exists PATH' \
       'readable PATH' \
       'writeable PATH' \
       'executable PATH' \
-      'available COMMAND' \
+      'available COMMAND, installed COMMAND' \
+      'cmd COMMAND, command COMMAND' \
       'older PATH_A PATH_B' \
       'newer PATH_A PATH_B' \
       'true VALUE' \
       'false VALUE' \
+      'bool VALUE, boolean VALUE' \
+      'truthy VALUE' \
+      'falsey VALUE' \
       'set NAME, var NAME, variable NAME' \
-      'false VALUE' \
       'alias NAME' \
       'builtin NAME' \
       'function NAME, fn NAME' \
-      'keyword NAME'
+      'keyword NAME' \
+      'array NAME' \
+      'exported NAME' \
+      'int NAME, int VALUE, integer NAME, integer VALUE' \
+      'hash NAME'
 
     command printf '\nNegation:\n'
     command printf "  ${name} %s\n" \
