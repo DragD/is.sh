@@ -59,8 +59,8 @@ test::warm() {
       "a${needle}"
       ''
     ) \
-    falsey=(1 false 'FALSE' 'F' 'No' 'n' 'OFF') \
-    truthy=(0 true 'True' 't' 'YES' 'Y' 'on')
+    array_falsey=(1 false 'FALSE' 'F' 'No' 'n' 'OFF') \
+    array_truthy=(0 true 'True' 't' 'YES' 'Y' 'on')
 
   # shellcheck disable=SC1010,SC1083
   # We disable these because we are intentionally not quoting these so as to
@@ -460,16 +460,16 @@ test::run() {
   assert_false 'false' 0 true
 
   # is bool|boolean
-  assert_true 'bool' "${truthy[@]}" "${falsey[@]}"
+  assert_true 'bool' "${array_truthy[@]}" "${array_falsey[@]}"
   _assert_raises 2 'boolean' $val_string $val_nsint64 $val_uint16
 
   # # is truthy
-  assert_true 'truthy' "${truthy[@]}"
-  assert_false 'truthy' "${falsey[@]}"
+  assert_true 'truthy' "${array_truthy[@]}"
+  assert_false 'truthy' "${array_falsey[@]}"
 
   # # is falsey
-  assert_true 'falsey' "${falsey[@]}"
-  assert_false 'falsey' "${truthy[@]}"
+  assert_true 'falsey' "${array_falsey[@]}"
+  assert_false 'falsey' "${array_truthy[@]}"
 
   # negation
   assert_true  'not number' $val_string
