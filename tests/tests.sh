@@ -526,8 +526,8 @@ test::run() {
   assert_false 'function' $ref_alias $ref_builtin $ref_keyword CMD
 
   # is set|var|variable
-  assert_true  'set' 'val_string_empty'
-  assert_false 'var' 'var_declared' 'var_undeclared' 'var_unset'
+  assert_true  'set' val_string_empty
+  assert_false 'var' var_undeclared var_declared var_unset
 
   # is in
   assert_true  'in' "$needle array_withNeedle"
