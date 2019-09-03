@@ -402,6 +402,10 @@ test::run() {
   assert_true  'available' 'which'
   assert_false 'installed' 'witch'
 
+  # is cmd|command
+  assert_true  'cmd' 'which'
+  assert_false 'command' 'witch'
+
   # is empty
   assert_true  'empty' "$val_string_empty" '""'
   assert_false 'empty' $val_string
@@ -530,10 +534,6 @@ test::run() {
   assert_false 'in' "$needle array_empty" "$needle array_withoutNeedle" \
     "$needle array_withNeedleasSubstring"
     assert_false 'in' 'a apple' # this may change
-
-  # is cmd|command
-  assert_true  'cmd' 'which'
-  assert_false 'command' 'witch'
 }
 
 printf 'Warming Tests\n' \
