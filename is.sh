@@ -160,17 +160,39 @@ is() {
       # cross-sh-compatible sans `pdksh v5.2.14` treats expanded empty as unset
       # @see http://mywiki.wooledge.org/BashFAQ/083
       local x; eval x="\"\${$1+set}\""; [ "$x" = 'set' ];;
+    array|builtin|keyword|hash|export)
+      is '_type' "$condition" "$1" || false;;
     alias)
-      is '_type' 'alias' "$1" || [ "${BASH_ALIASES[$1]+"set"}" = 'set' ];;
-    builtin)
-      is '_type' 'builtin' "$1";;
+      is '_type' "$condition" "$1" || [ "${BASH_ALIASES[$1]+"set"}" = 'set' ];;
     fn|function)
-      is '_type' 'function' "$1";;
-    keyword)
-      is '_type' 'keyword' "$1";;
+      is '_type' 'function' "$1" || false;;
+    int|integer)
+      is '_type' 'integer' "$1" || [ "$1" -eq "$1" ] 2> /dev/null || false;;
     _type)
-      LANG=C command type ${BASH_VERSION:+-t} "$2" 2> /dev/null \
-        | command grep "${KSH_VERSION:+"$2 is a "}$1" 1> /dev/null;;
+      local var reg='^declare -n [^=]+=\"([^\"]+)\"$'
+      var=$(declare -p "$2" 2> /dev/null)
+
+      while [[ $var =~ $reg ]]; do
+        var=$(declare -p "${BASH_REMATCH[1]}" 2> /dev/null)
+      done
+
+      var="${var#declare -}"
+      local prefix="${KSH_VERSION:+"$2 is a "}" attributes="${var%% *}"
+      local expectedType="${prefix}$1" actualType="$prefix"
+
+      case $attributes in
+        *x*) [ "$expectedType" = 'export' ] && return 0;;
+      esac
+
+      case "$attributes" in
+        a*) actualType+='array';;
+        A*) actualType+='hash';;
+        i*) actualType+='integer';;
+        x*) actualType+='export';; # this shouldn't get hit anymore
+         *) actualType=$(LANG=C \type ${BASH_VERSION:+-t} "$2" 2> /dev/null);;
+      esac
+
+      [ "$expectedType" = "$actualType" ] || return 2;;
     in)
       # currently does not handle being passed in a string instead of an array
       # use a subshell so as to preserve $IFS
