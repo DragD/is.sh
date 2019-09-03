@@ -121,7 +121,7 @@ is() {
     num|number)
       # for compatibility w/ versions < 3.2, regex must be stored in variable
       local regex='^[-+]?([0-9]+\.?|[0-9]*\.[0-9]+)$'
-      [[ $1 = *[0-9]* && $1 =~ $regex ]];;
+      [[ $1 = *[0-9]* && $1 =~ $regex ]] || is 'int' "$1";;
     older)
       [ "$1" -ot "$2" ];;
     newer)
