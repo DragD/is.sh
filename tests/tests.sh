@@ -357,13 +357,13 @@ assert_false() { _assert_raises 1 "${1}" "${@:2}"; }
 # Tests
 test::run() {
   # no args
-  assert_true $val_string_empty
+  assert_true '' "$val_string_empty"
 
   # help
-  assert_true '--help'
+  assert_true '' '--help'
 
   # version
-  assert_true '--version'
+  assert_true '' '--version'
 
   # unspported condition
   assert_false 'spam' 'foo bar'
