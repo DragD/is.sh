@@ -8,6 +8,8 @@
 
 is() {
   local name="${FUNCNAME[0]}" version='1.1.2'
+  declare IS_NOT_OLD_BASH # so > bash 3
+  [ "${BASH_VERSINFO[0]}" -ge 4 ] && IS_NOT_OLD_BASH=0 || IS_NOT_OLD_BASH=1
 
   # shellcheck disable=SC2016
   is::show.help() {
@@ -67,15 +69,9 @@ is() {
       'not a number VALUE' \
       'an existing PATH' \
       'the file PATH'
-
-    command unset ${BASH_VERSION:+-f}
   }
 
-  is::show.version() {
-    command printf '%s %s\n' "${name}" "${version}"
-
-    command unset ${BASH_VERSION:+-f}
-  }
+  is::show.version() { command printf '%s %s\n' "${name}" "${version}"; }
 
   is::tolower() {
     if [ "$IS_NOT_OLD_BASH" -eq 0 ]; then
@@ -87,9 +83,16 @@ is() {
     return 0
   }
 
-  [ "$#" -eq 0 ] && is::show.version && is::show.help && return 0
-  [ "$1" = '--help' ] && is::show.help && return 0
-  [ "$1" = '--version' ] && is::show.version && return 0
+  is::unset() {
+    command unset ${BASH_VERSION:+-f} is::unset \
+      is::show.version \
+      is::show.help \
+      is::tolower
+  }
+
+  [ "$#" -eq 0 ] && is::show.version && is::show.help && is::unset && return 0
+  [ "$1" = '--help' ] && is::show.help && is::unset && return 0
+  [ "$1" = '--version' ] && is::show.version && is::unset && return 0
 
   # Since we currently support bash v3.2.57, we can't use `"${1,,}"`
   local condition=$1 && shift 1
@@ -212,8 +215,10 @@ is() {
       is 'substring' "$IFS$1$IFS" "$IFS${localarray[*]}$IFS" );;
     *) false ;;
   esac 1> /dev/null
+  local returnStatus=$?
+  is::unset
 
-  return $?
+  return $returnStatus
 }
 
 if [ "${BASH_SOURCE[0]}" != "${0}" ]; then
