@@ -123,6 +123,7 @@ is() {
     executable)
       [ -x "$1" ];;
     available|installed)
+      # shellcheck disable=SC2230
       which "$1";;
     cmd|command)
       command -v "$1" -- 2> /dev/null;;
