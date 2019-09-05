@@ -12,10 +12,10 @@ FILE="${1:-"$DIR/is.sh"}"
 # read -rst # -n 999 === sleep # without calling an external tool
 # Prepare working directory
 # shellcheck disable=SC2034
-test::warm() {
+printf 'Warming Tests\n' && {
   command cd "$(mktemp -d)" || exit 1
 
-  declare -g path_file_abs="${PWD}/file_abs" path_dir_abs="${PWD}/dir_abs" \
+  declare path_file_abs="${PWD}/file_abs" path_dir_abs="${PWD}/dir_abs" \
     path_dir_rel='./dir_rel' \
     path_dir_symlink='dir_symlink' \
     path_file_forbidden='./file_forbidden' \
@@ -39,8 +39,8 @@ test::warm() {
   ln -s $path_file_rel $path_file_symlink
   ln -s $path_dir_rel $path_dir_symlink
 
-  declare -g bell=$'\a' backspace=$'\b' needle=':'
-  declare -ag array_empty=() \
+  declare bell=$'\a' backspace=$'\b' needle=':'
+  declare -a array_empty=() \
     array_withNeedle=(':') \
     array_withoutNeedle=('a' '' 0 true) \
     array_withNeedleasSubstring=(
@@ -127,7 +127,7 @@ test::warm() {
     ]]
   )
   # shellcheck disable=SC1010,SC1083
-  declare -ag array_keywords=(
+  declare -a array_keywords=(
     if then elif else fi
     for in do done
     while until
@@ -191,7 +191,7 @@ test::warm() {
       # \`\`
     ]
   )
-  declare -ag array_builtins_bash=(
+  declare -a array_builtins_bash=(
     alias unalias
     bind
     builtin
@@ -252,7 +252,7 @@ test::warm() {
 
   #  # These cause a EOF error due to improper parsing of command subsitution
   #   within comments
-  declare -ag parser_error_for_keyword_double_bracket=(
+  declare -a parser_error_for_keyword_double_bracket=(
     # [[
     #   # $([[)
     #   # $(]])
@@ -280,47 +280,47 @@ test::warm() {
     # ]
   )
 
-  declare -g var_declared var_unset=''
+  declare var_declared var_unset=''
   command unset ${BASH_VERSION+-v} var_unset
 
-  declare -g val_string='string' val_str='str' val_rtS='rtS' val_string_empty=''
+  declare val_string='string' val_str='str' val_rtS='rtS' val_string_empty=''
 
   # remember, -g just bring the variables scope to the top
   #   `declare -p` will not show `-g`
-  declare -gi var_gi=0
-  declare -ga var_ga=([0]='-ga')
-  declare -gA var_gA=([0]='-gA')
-  declare -gx var_gx='-x'
+  declare -i var_gi=0
+  declare -a var_ga=([0]='-ga')
+  declare -A var_gA=([0]='-gA')
+  declare -x var_gx='-x'
 
   # -{i,a,A}gx, -{i,a,A}xg, -gx{i,a,A}, -x{i,a,A}g, -xg{i,a,A},
   #   will all evaluate to -g{i,a,A}x
   #   likewise with -g{i,a,A}, -{i,a,A}g and then exporting
-  declare -gix var_gix=1
-  declare -gax var_gax=([0]='-gax')
-  declare -gAx var_gAx=([0]='-gAx')
+  declare -ix var_gix=1
+  declare -ax var_gax=([0]='-gax')
+  declare -Ax var_gAx=([0]='-gAx')
 
   command alias myAlias=''
-  declare -g ref_alias='myAlias' \
+  declare ref_alias='myAlias' \
     ref_builtin='printf' \
     ref_keyword='if' \
     ref_function='assert_true' \
     ref_var_gi='var_gi'
 
   # note: bash's goes up to but excludes uint64 (2**64); it will evaluate to 0
-  declare -g val_uint16=$((2**16)) val_uint32=$((2**32)) val_sint64=$((2**63-1))
-  declare -g val_nsint64=$((val_sint64+1)) # wraps to negative
+  declare val_uint16=$((2**16)) val_uint32=$((2**32)) val_sint64=$((2**63-1))
+  declare val_nsint64=$((val_sint64+1)) # wraps to negative
   val_sint64="+$val_sint64"
-  declare -g val_udec16dot0="$val_uint16.0"
+  declare val_udec16dot0="$val_uint16.0"
     val_udec16dot16="$val_uint16.$val_uint16"
 
-  declare -g val_rgb='0011ff' \
+  declare val_rgb='0011ff' \
     val_curreny_usd="'\$$val_uint16'" \
     val_e_notation="${val_uint16}e${val_uint16}" \
     val_nsdec16="-$val_udec16dot0" \
     val_sdec16="+$val_udec16dot0" \
     val_udec16comma0="$val_uint16,0"
 
-  declare -ga array_decimal=(
+  declare -a array_decimal=(
     "$val_nsdec16"
     "$val_sdec16"
     "$val_udec16dot0"
@@ -343,7 +343,7 @@ test::warm() {
     var_gax
     var_gAx
   )
-}
+} && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
 
 # Helpers
 _assert_raises() {
@@ -536,10 +536,6 @@ test::run() {
     "$needle array_withNeedleasSubstring"
     assert_false 'in' 'a apple' # this may change
 }
-
-printf 'Warming Tests\n' \
-  && test::warm \
-  && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
 
 # shellcheck source=./assert.sh
 . "$DIR/tests/assert.sh"
