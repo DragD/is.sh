@@ -53,9 +53,10 @@ is() {
       'function NAME, fn NAME' \
       'keyword NAME' \
       'array NAME' \
-      'exported NAME' \
+      'exported NAME, export NAME' \
       'int NAME, int VALUE, integer NAME, integer VALUE' \
-      'hash NAME'
+      'hash NAME, dictionary NAME' \
+      'in $VALUE NAME'
 
     command printf '\nNegation:\n'
     command printf "  ${name} %s\n" \
