@@ -77,13 +77,23 @@ is() {
     command unset ${BASH_VERSION:+-f}
   }
 
+  is::tolower() {
+    if [ "$IS_NOT_OLD_BASH" -eq 0 ]; then
+      printf '%s' "${1,,}"
+    else
+      printf '%s' "$1" | tr '[:upper:]' '[:lower:]'
+    fi
+
+    return 0
+  }
+
   [ "$#" -eq 0 ] && is::show.version && is::show.help && return 0
   [ "$1" = '--help' ] && is::show.help && return 0
   [ "$1" = '--version' ] && is::show.version && return 0
 
   # Since we currently support bash v3.2.57, we can't use `"${1,,}"`
   local condition=$1 && shift 1
-  condition="$(printf '%s' "${condition}" | tr '[:upper:]' '[:lower:]')"
+  condition=$(is::tolower "$condition")
 
   if [ "$condition" = 'not' ]; then
     ! is "${@}"
@@ -92,7 +102,7 @@ is() {
 
   while [ "$condition" == 'a' ] || [ "$condition" == 'an' ] \
     || [ "$condition" == 'the' ]; do :
-    condition=$1 && shift 1
+    condition=$(is::tolower "$1") && shift 1
   done
 
   # Note: case statements takes an expression & therefore doesn't need quotes
@@ -151,10 +161,10 @@ is() {
     bool|boolean)
       is 'truthy' "$1" || is 'falsey' "$1" || return 2;;
     truthy)
-      case "$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')" in
+      case $(is::tolower "$1") in
         0|t|y|true|yes|on) true;; *) false;; esac;;
     falsey)
-      case "$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')" in
+      case $(is::tolower "$1") in
         1|f|n|false|no|off) true;; *) false;; esac;;
     set|var|variable)
       # cross-sh-compatible sans `pdksh v5.2.14` treats expanded empty as unset
