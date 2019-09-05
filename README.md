@@ -51,30 +51,53 @@ $ wget raw.githubusercontent.com/qzb/is.sh/latest/is.sh && . ./is.sh
 checks if...
 
 * `is equal "$valueA" "$valueB"` - 1st value is identical||equivalent to the 2nd
+  * alternate(s) `eq`
 * `is matching "$regex" "$value"` - whole value matches the regular expression
+  * alternate(s) `match`
 * `is substring "$valueA" "$valueB"` - 1st value is a part of the 2nd
+  * alternate(s) `substr`
 * `is empty "$value"` - value is empty
 * `is number "$value"` - value is a number
+  * alternate(s) `num`
 * `is gt "$numberA" "$numberB"` - 1st number is greater than the 2nd
 * `is lt "$numberA" "$numberB"` - 1st number is less than the 2nd
 * `is ge "$numberA" "$numberB"` - 1st number is greater than or equal to the 2nd
 * `is le "$numberA" "$numberB"` - 1st number is less than or equal to the 2nd
 * `is file "$path"` - path is a file
 * `is dir "$path"` - path is a directory
+  * alternate(s) `directory`
 * `is link "$path"` - path is a symbolic link
+  * alternate(s) `symlink`
 * `is existent "$path"` - there is anything at this path
+  * alternate(s) `exists`, `exist`, `existing`
 * `is readable "$path"` - path is readable
 * `is writeable "$path"` - path is writeable
 * `is executable "$path"` - path is executable
-* `is available "$command"` - command is available
+* `is available "$command"` - command is available (using `which`)
+  * alternate(s) `installed`
+* `is cmd "$command"` - command is available (using `command`)
+  * alternate(s) `command`
 * `is older "$pathA" "$pathB"` - 1st path is older than the 2nd
 * `is newer "$pathA" "$pathB"` - 1st path is newer than the 2nd
 * `is true "$value"` - value is equal to `true` or `0`
 * `is false "$value"` - value is not equal to `true` and not equal to `0`
-* `is alias name` - name is an alias
-* `is builtin name` - name is a builtin
-* `is function name` - name is a function
-* `is keyword name` - name is a keyword
+* `is truthy "$value"` - value is equal to `0|t|y|true|yes|on` (case-insensitive)
+* `is falsey "$value"` - value is equal to `1|f|n|false|no|off` (case-insensitive)
+* `is boolean NAME` - name is an variable, name is either `truthy` or `falsey`
+  * alternate(s) `bool`
+* `is alias NAME` - name is an alias
+* `is builtin NAME` - name is a builtin
+* `is function NAME` - name is a function
+  * alternate(s) `fn`
+* `is keyword NAME` - name is a keyword
+* `is array NAME` - name is a variable
+* `is hash NAME` - name is a variable
+  * alternate(s) `dictionary`
+* `is integer NAME` - name is a variable
+* `is exported NAME` - name is a variable
+  * alternate(s) `export`
+* `is set NAME` - name is a variable
+  * alternate(s) `var`, `variable`
 * `is in "$value" arrayName` - value is in the array
 
 ### Negations
