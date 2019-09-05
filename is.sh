@@ -90,11 +90,10 @@ is() {
     return $?
   fi
 
-  if [ "$condition" == 'a' ] || [ "$condition" == 'an' ] \
-    || [ "$condition" == 'the' ]; then
-      is "${@}"
-      return $?
-  fi
+  while [ "$condition" == 'a' ] || [ "$condition" == 'an' ] \
+    || [ "$condition" == 'the' ]; do :
+    condition=$1 && shift 1
+  done
 
   # Note: case statements takes an expression & therefore doesn't need quotes
   #       it is being kept for consistency
