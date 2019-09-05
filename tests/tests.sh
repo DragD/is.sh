@@ -448,8 +448,9 @@ test::run() {
   # is match|matching
   assert_true  'match' "'[$val_string]+' '$val_string'" \
                        "'[$val_string]+' $val_str"
-  assert_false 'matching' "[$val_string]+ ${val_string^}" \
-                          "[$val_string]+ '$val_rtS'"
+  # Since we currently support bash v3.2.57, we can't use `"${1^}"`
+  assert_false 'matching' "[$val_string]+ '$val_rtS'" \
+    "[$val_string]+ $(printf '%s' "$val_string" | tr '[:lower:]' '[:upper:]')"
 
   # is val_str|substring
   assert_true  'substr' "$val_str $val_string"
