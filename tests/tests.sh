@@ -3,6 +3,7 @@
 declare CMD='is' DIR FILE
 DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)
 FILE="${1:-"$DIR/is.sh"}"
+[ "${BASH_VERSINFO[0]}" -ge 4 ] && declare IS_NOT_OLD_BASH=0 # so bash 4 or 5
 
 # shellcheck source=../is.sh
 . "$FILE"
@@ -142,8 +143,7 @@ printf 'Warming Tests\n' && {
   # similar to the keyword [[ (as seen above), test's bracket alias has similar
   #   issues these are syntactically valid forms
   # shellcheck disable=SC1010,SC1083
-  declare -a array_builtin_test_bracket=(
-    '[' # these are parsed individually
+  declare -a array_builtin_test_bracket_not_3=(
     [ ] # this is parsed as a single string
     [
 
@@ -162,9 +162,10 @@ printf 'Warming Tests\n' && {
     [
       #
     ]
-    # i.e the following two lines are equivalent
+    # i.e the following three lines are equivalent
     [ { "hello" } ]
     '[ { "hello" } ]'
+    '[  ]'
     [
         # any content, sans comment, between [ && ] will be parsed
         # as a single string, even in this array
@@ -191,7 +192,10 @@ printf 'Warming Tests\n' && {
       # \`\`
     ]
   )
+  # compopt is a Programmable Completion builtin
+  declare -a array_builtins_bash_not_3=(mapfile readarray compopt)
   declare -a array_builtins_bash=(
+    ${IS_NOT_OLD_BASH+${array_builtins_bash_not_3[@]}}
     alias unalias
     bind
     builtin
@@ -203,7 +207,7 @@ printf 'Warming Tests\n' && {
     help
     let
     logout
-    mapfile read readarray
+    read
     source # `.` facade
     ulimit
     # Job Control Builtins
@@ -213,7 +217,7 @@ printf 'Warming Tests\n' && {
     # History Builtins
     fc history
     # Programmable Completion Builtins
-    compgen complete compopt
+    compgen complete
     # Special builtins
     shopt
   ) \
@@ -227,7 +231,12 @@ printf 'Warming Tests\n' && {
     test
     times
     umask
-    "${array_builtin_test_bracket[@]}"
+    ${IS_NOT_OLD_BASH+"${array_builtin_test_bracket_not_3[@]}"}
+    # these are valid in v3.2.57
+    '[' # this is parsed individually
+    # i.e the following two lines are equivalent
+    '[ { "hello" } ]'
+    '[  ]'
     # Special POSIX builtins
     :
     .
@@ -280,16 +289,21 @@ printf 'Warming Tests\n' && {
     # ]
   )
 
-  declare var_declared var_unset=''
+  # $var_initialized_to_nothing actually gets set to an empty string
+  declare var_declared var_unset='' var_initialized_to_nothing=
   command unset ${BASH_VERSION+-v} var_unset
 
   declare val_string='string' val_str='str' val_rtS='rtS' val_string_empty=''
+  declare val_STRING
+  [ -n "${IS_NOT_OLD_BASH-}" ] \
+    && val_STRING="${val_string^}" \
+    || val_STRING=$(printf '%s' "$val_string" | tr '[:lower:]' '[:upper:]')
 
   # remember, -g just bring the variables scope to the top
   #   `declare -p` will not show `-g`
   declare -i var_gi=0
   declare -a var_ga=([0]='-ga')
-  declare -A var_gA=([0]='-gA')
+  [ -n "${IS_NOT_OLD_BASH-}" ] && declare -A var_gA=([0]='-gA')
   declare -x var_gx='-x'
 
   # -{i,a,A}gx, -{i,a,A}xg, -gx{i,a,A}, -x{i,a,A}g, -xg{i,a,A},
@@ -297,7 +311,9 @@ printf 'Warming Tests\n' && {
   #   likewise with -g{i,a,A}, -{i,a,A}g and then exporting
   declare -ix var_gix=1
   declare -ax var_gax=([0]='-gax')
-  declare -Ax var_gAx=([0]='-gAx')
+  declare var_gAx
+  [ -n "${IS_NOT_OLD_BASH-}" ] && declare -A var_gAx=([0]='-gAx')
+  export var_gAx
 
   command alias myAlias=''
   declare ref_alias='myAlias' \
@@ -441,7 +457,8 @@ test::run() {
                     "$val_uint32 $val_udec16dot0" "$val_string $val_string"
 
   # is eq|equal
-  assert_true  'equal' "$val_string $val_string" "$val_uint16 $val_udec16dot0"
+  assert_true  'equal' "$val_string $val_string" "$val_uint16 $val_udec16dot0" \
+                       "$val_string_empty $var_initialized_to_nothing"
   assert_false 'eq' "$val_uint16 $val_string" "$val_string $val_uint16" \
                     "$val_udec16dot0 $val_uint32" "$val_uint32 $val_udec16dot0"
 
@@ -450,7 +467,7 @@ test::run() {
                        "'[$val_string]+' $val_str"
   # Since we currently support bash v3.2.57, we can't use `"${1^}"`
   assert_false 'matching' "[$val_string]+ '$val_rtS'" \
-    "[$val_string]+ $(printf '%s' "$val_string" | tr '[:lower:]' '[:upper:]')"
+    "[$val_string]+ $val_STRING"
 
   # is val_str|substring
   assert_true  'substr' "$val_str $val_string"
@@ -503,15 +520,17 @@ test::run() {
   assert_false 'array' var_gx var_gA var_gAx
 
   # is hash
-  assert_true  'hash' var_gA var_gAx
-  assert_false 'dictionary' var_gx var_ga var_gaX
+  if [ -n "${IS_NOT_OLD_BASH-}" ]; then
+    assert_true  'hash' var_gA var_gAx
+    assert_false 'dictionary' var_gx var_ga var_gaX
+  fi
 
   # is export
   assert_true  'export' var_gx var_gax var_gix var_gAx
   assert_false 'exported' var_gA var_ga var_gi
 
   # is alias
-  assert_true  'alias' $ref_alias
+  [ -n "${IS_NOT_OLD_BASH-}" ] && assert_true  'alias' $ref_alias
   assert_false 'alias' $ref_builtin $ref_function $ref_keyword "\$CMD"
 
   # is builtin
@@ -527,8 +546,14 @@ test::run() {
   assert_false 'function' $ref_alias $ref_builtin $ref_keyword CMD
 
   # is set|var|variable
-  assert_true  'set' val_string_empty
-  assert_false 'var' var_undeclared var_declared var_unset
+  assert_true  'set' val_string_empty var_initialized_to_nothing
+  assert_false 'var' var_undeclared var_unset
+
+  if [ -n "${IS_NOT_OLD_BASH-}" ]; then
+    assert_false 'var' var_declared
+  else
+    assert_true 'var' var_declared
+  fi
 
   # is in
   assert_true  'in' "$needle array_withNeedle"
