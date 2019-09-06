@@ -17,6 +17,7 @@
     "test": "tests"
   },
   "scripts": {
+    "is": "./is.sh",
     "lint": "shellcheck is.sh",
     "test": "./tests/tests.sh"
   },
