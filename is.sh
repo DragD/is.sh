@@ -98,15 +98,15 @@ is() {
   local condition=$1 && shift 1
   condition=$(is::tolower "$condition")
 
-  if [ "$condition" = 'not' ]; then
-    ! is "${@}"
-    return $?
-  fi
-
   while [ "$condition" == 'a' ] || [ "$condition" == 'an' ] \
     || [ "$condition" == 'the' ]; do :
     condition=$(is::tolower "$1") && shift 1
   done
+
+  if [ "$condition" = 'not' ]; then
+    ! is "${@}"
+    return $?
+  fi
 
   # Note: case statements takes an expression & therefore doesn't need quotes
   #       it is being kept for consistency
