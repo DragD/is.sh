@@ -7,7 +7,7 @@
 ##
 
 is() {
-  local name="${FUNCNAME[0]}" version='1.1.2'
+  local name="${FUNCNAME[0]}" version='1.2.0'
   declare IS_NOT_OLD_BASH # so > bash 3
   [ "${BASH_VERSINFO[0]}" -ge 4 ] && IS_NOT_OLD_BASH=0 || IS_NOT_OLD_BASH=1
 
