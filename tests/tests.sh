@@ -9,6 +9,8 @@ FILE="${1:-"$DIR/is.sh"}"
 . "$FILE"
 ! command -v "$CMD" > /dev/null && printf '%s not found.\n' "$CMD" && exit 1
 
+readonly PASS="\033[s\033[1F\033[%s@\033[%s@\033[32m\342\234\223\033[39m\033[u"
+
 # : 1> file === touch file without calling an external tool
 # read -rst # -n 999 === sleep # without calling an external tool
 # Prepare working directory
@@ -359,7 +361,7 @@ printf 'Warming Tests\n' && {
     var_gax
     var_gAx
   )
-} && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
+} && printf "$PASS" '' ''
 
 # Helpers
 _assert_raises() {
@@ -565,9 +567,7 @@ test::run() {
 # shellcheck source=./assert.sh
 . "$DIR/tests/assert.sh"
 
-printf 'Running Tests\n' \
-  && test::run \
-  && printf '\033[s\033[1F\033[%s@\033[%s@\033[32m\u2713\033[39m\033[u' '' ''
+printf 'Running Tests\n' && test::run && printf "$PASS" '' ''
 
 # end of tests
 # shellcheck disable=SC2119
