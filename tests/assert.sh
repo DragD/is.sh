@@ -62,17 +62,19 @@ EOF
 done
 
 _indent=$'\n\t' # local format helper
+_date=date
+[ $(uname) = 'Darwin' ] && _date=gdate
 
 _assert_reset() {
     tests_ran=0
     tests_failed=0
     tests_errors=()
-    tests_starttime="$(date +%s%N)" # nanoseconds_since_epoch
+    tests_starttime="$($_date +%s%N)" # nanoseconds_since_epoch
 }
 
 assert_end() {
     # assert_end [suite ..]
-    tests_endtime="$(date +%s%N)"
+    tests_endtime="$($_date +%s%N)"
     # required visible decimal place for seconds (leading zeros if needed)
     local tests_time="$(printf "%010d" \
         "$(( ${tests_endtime/%N/000000000} - ${tests_starttime/%N/000000000} ))"
